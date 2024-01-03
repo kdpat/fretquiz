@@ -36,7 +36,8 @@ public class Game {
 
     public static Game create(User host, Settings settings) {
         var players = new ArrayList<Player>();
-        players.add(Player.from(host));
+        var hostPlayer = Player.from(host);
+        players.add(hostPlayer);
 
         var game = new Game();
         game.host = host;

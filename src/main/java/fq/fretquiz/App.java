@@ -16,11 +16,12 @@ public class App {
 	}
 
 	public static Instant nowMillis() {
-		return Instant.now().truncatedTo(ChronoUnit.MILLIS)	;
+		return Instant.now().truncatedTo(ChronoUnit.MILLIS);
 	}
 
 	public static <T> T randomElem(List<T> list) {
-		int index = ThreadLocalRandom.current().nextInt(list.size());
+		var random = ThreadLocalRandom.current();
+		var index = random.nextInt(list.size());
 		return list.get(index);
 	}
 }

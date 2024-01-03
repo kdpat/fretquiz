@@ -17,7 +17,6 @@ public class GameService {
         this.gameRepo = gameRepo;
     }
 
-    @Transactional
     public Optional<Game> findGame(Long id) {
         return gameRepo.findById(id);
     }

@@ -35,7 +35,7 @@ public class Guess {
         this.payload = payload;
     }
 
-    @JsonProperty
+    @JsonProperty(value = "isCorrect")
     public boolean isCorrect() {
         return isCorrect;
     }

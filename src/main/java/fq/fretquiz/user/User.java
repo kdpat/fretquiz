@@ -1,5 +1,6 @@
 package fq.fretquiz.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -28,6 +29,7 @@ public class User {
         return user;
     }
 
+    @JsonProperty
     public Long id() {
         return id;
     }
@@ -36,6 +38,7 @@ public class User {
         this.id = id;
     }
 
+    @JsonProperty
     public String name() {
         return name;
     }

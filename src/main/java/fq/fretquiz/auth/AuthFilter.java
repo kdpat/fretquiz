@@ -31,7 +31,6 @@ public class AuthFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         var cookies = request.getCookies();
-
         var token = Auth.findUserIdToken(cookies).orElse(null);
 
         if (token == null) {

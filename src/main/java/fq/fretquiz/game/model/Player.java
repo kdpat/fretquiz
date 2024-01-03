@@ -23,9 +23,8 @@ public class Player {
         return player;
     }
 
-    public Player incrementScore() {
+    public void incrementScore() {
         score++;
-        return this;
     }
 
     @JsonProperty
@@ -37,6 +36,7 @@ public class Player {
         this.id = id;
     }
 
+    @JsonProperty
     public User user() {
         return user;
     }
