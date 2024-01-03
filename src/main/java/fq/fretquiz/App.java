@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @SpringBootApplication
 public class App {
@@ -15,5 +17,10 @@ public class App {
 
 	public static Instant nowMillis() {
 		return Instant.now().truncatedTo(ChronoUnit.MILLIS)	;
+	}
+
+	public static <T> T randomElem(List<T> list) {
+		int index = ThreadLocalRandom.current().nextInt(list.size());
+		return list.get(index);
 	}
 }
