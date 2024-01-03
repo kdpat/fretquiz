@@ -32,14 +32,17 @@ public class AuthFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         var cookies = request.getCookies();
 
-        Auth.findUserIdToken(cookies)
-                .ifPresentOrElse(token -> {
-                    var userId = Auth.decodeUserIdToken(token).orElseThrow();
+        var token = Auth.findUserIdToken(cookies).orElse(null);
 
-                    if (!userService.userExists(userId)) {
-                        addNewUserCookie(response);
-                    }
-                }, () -> addNewUserCookie(response));
+        if (token == null) {
+            addNewUserCookie(response);
+        } else {
+            var userId = Auth.decodeUserIdToken(token).orElse(null);
+
+            if (userId == null || !userService.userExists(userId)) {
+                addNewUserCookie(response);
+            }
+        }
 
         filterChain.doFilter(request, response);
     }

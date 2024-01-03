@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>FretQuiz</title>
+    <script defer type="importmap">
+        {
+          "imports": {
+            "@stomp/stompjs": "https://ga.jspm.io/npm:@stomp/stompjs@7.0.0/esm6/index.js"
+          }
+        }
+    </script>
+
+    <script
+            defer
+            src="https://ga.jspm.io/npm:es-module-shims@1.5.1/dist/es-module-shims.js"
+            crossorigin="anonymous"
+    ></script>
+
+    <script defer type="module" th:src="@{/js/main.js}"></script>
+    <script defer type="module" th:src="@{/js/game.js}"></script>
+</head>
+<body>
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+    </ul>
+</nav>
+<div id="game"></div>
+</body>
+</html>
