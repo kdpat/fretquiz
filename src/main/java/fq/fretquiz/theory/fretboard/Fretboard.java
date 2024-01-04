@@ -19,12 +19,12 @@ public record Fretboard(List<Note> openStrings,
             );
 
     public static Fretboard create(List<Note> openStrings, FretSpan fretSpan) {
-        var fretCoordNotes = calculateFretCoordNotes(openStrings, fretSpan);
-        return new Fretboard(openStrings, fretSpan, fretCoordNotes);
+        var notes = calculateNotes(openStrings, fretSpan);
+        return new Fretboard(openStrings, fretSpan, notes);
     }
 
-    public static Map<FretCoord, Note> calculateFretCoordNotes(List<Note> openStrings, FretSpan fretSpan) {
-        var fretCoordNotes = new HashMap<FretCoord, Note>();
+    public static Map<FretCoord, Note> calculateNotes(List<Note> openStrings, FretSpan fretSpan) {
+        var notes = new HashMap<FretCoord, Note>();
         var stringCount = openStrings.size();
 
         for (int string = 0; string < stringCount; string++) {
@@ -32,12 +32,11 @@ public record Fretboard(List<Note> openStrings,
                 var fretCoord = new FretCoord(string + 1, fret);
                 var openStringNote = openStrings.get(string);
                 var note = openStringNote.transpose(fret);
-
-                fretCoordNotes.put(fretCoord, note);
+                notes.put(fretCoord, note);
             }
         }
 
-        return fretCoordNotes;
+        return notes;
     }
 
     /**

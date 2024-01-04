@@ -44,24 +44,29 @@ function GameComponent(props) {
   }, [])
 
   return html`
-    <div>
-      <h2>Game ${props.gameId}</h2>
-      <p>Status: ${game?.status}</p>
-      <${Players} players=${game?.players || []} />
-      <${Staff} notes=${notes}/>
+    <div class="GameComponent">
+      <div>
+        <h2>Game ${props.gameId}</h2>
+        <p>Status: ${game?.status}</p>
+        <${Staff} notes=${notes}/>
 
-      <${Fretboard}
+          <${Fretboard}
               ws=${wsRef.current}
               gameId=${props.gameId}
               playerId=${playerId}
               dots=${dots}
               clickable=${canGuess}
-      />
+          />
 
-      ${canStartRound 
-        && html`<${StartRoundButton} ws=${wsRef.current} 
+          ${canStartRound
+          && html`<${StartRoundButton} ws=${wsRef.current}
                                      gameId=${props.gameId}
                                      status=${game?.status}/>`}
+      </div>
+
+      <div class="game-info">
+        <${Players} players=${game?.players || []} />
+      </div>
     </div>
   `;
 }

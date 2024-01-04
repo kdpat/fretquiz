@@ -1,0 +1,43 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body, h2, nav, li {
+    border: 1px solid black;
+}
+
+body {
+    font-family: sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0;
+    text-align: center;
+}
+
+ul {
+    list-style-type: none;
+    display: flex;
+}
+
+li {
+    margin: auto;
+}
+
+li a {
+    text-decoration: none;
+}
+
+.GameComponent {
+    display: flex;
+    height: 100%;
+}
+
+.GameComponent > * {
+    margin: 1rem auto;
+}
+
+.game-info {
+    display: flex;
+    flex-direction: column;
+}

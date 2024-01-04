@@ -12,7 +12,7 @@ export function StartRoundButton(props) {
     : "Next Round";
 
   return html`
-      <button onClick=${onClick}>${text}</button>
+      <button class="StartRoundButton" onClick=${onClick}>${text}</button>
   `;
 }
 

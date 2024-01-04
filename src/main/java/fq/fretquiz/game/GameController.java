@@ -2,7 +2,6 @@ package fq.fretquiz.game;
 
 import fq.fretquiz.App;
 import fq.fretquiz.auth.Auth;
-import fq.fretquiz.game.model.GameUpdate;
 import fq.fretquiz.game.model.Guess;
 import fq.fretquiz.game.model.Player;
 import fq.fretquiz.user.UserService;
@@ -17,8 +16,6 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import java.util.List;
 
 @Controller
 public class GameController {
@@ -77,15 +74,10 @@ public class GameController {
         var gameId = App.decodeId(encodedGameId);
         var user = principal.toUser();
 
-        var gameUpdate = gameService.findGame(gameId)
+        return gameService.findGame(gameId)
                 .map(game -> gameService.startNewRound(game, user))
+                .map(GameMessage::from)
                 .orElseThrow();
-
-        return switch (gameUpdate) {
-            case GameUpdate.None(String reason) -> new GameMessage.NoUpdate(reason);
-            case GameUpdate.RoundStarted(var game, var round) -> new GameMessage.RoundStarted(game, round);
-            default -> throw new IllegalStateException("Unexpected value: " + gameUpdate);
-        };
     }
 
     @MessageMapping("/game/{encodedGameId}/guess")
@@ -94,14 +86,9 @@ public class GameController {
                                    Guess.Payload payload) {
         var gameId = App.decodeId(encodedGameId);
 
-        var gameUpdate = gameService.findGame(gameId)
+        return gameService.findGame(gameId)
                 .map(game -> gameService.handleGuess(game, payload))
+                .map(GameMessage::from)
                 .orElseThrow();
-
-        return switch (gameUpdate) {
-            case GameUpdate.GuessHandled(var game, var guess) -> new GameMessage.GuessHandled(game, guess);
-            case GameUpdate.None(String reason) -> new GameMessage.NoUpdate(reason);
-            default -> throw new IllegalStateException("Unexpected value: " + gameUpdate);
-        };
     }
 }

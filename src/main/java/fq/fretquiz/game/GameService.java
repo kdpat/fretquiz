@@ -46,7 +46,7 @@ public class GameService {
         var userIsHost = Objects.equals(user.id(), hostId);
 
         if (!userIsHost) {
-            return new GameUpdate.None("User is not host.");
+            return new GameUpdate.None("User must be host to start round.");
         }
 
         var round = Round.create(game.settings());
