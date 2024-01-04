@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -23,6 +25,29 @@ class GameServiceTest {
     GameService gameService;
 
     Logger log = LoggerFactory.getLogger(GameServiceTest.class);
+
+    @Test
+    void createLobby() {
+        var user0 = userService.createUser();
+        var game0 = gameService.createLobby(user0);
+        log.info("game created: {}", game0);
+
+        var user1 = userService.createUser();
+        var game1 = gameService.addPlayer(game0, user1);
+        log.info("player added: {}", game1);
+
+        Game game2;
+        var gameUpdate0 = gameService.startNewRound(game1, user0);
+
+        if (gameUpdate0 instanceof GameUpdate.RoundStarted(var game, var round)) {
+            game2 = game;
+            log.info("round started: {}", game);
+        } else {
+            throw new IllegalStateException("Round not started");
+        }
+
+        assertNotNull(game2);
+    }
 
     @Test
     void createGame() {

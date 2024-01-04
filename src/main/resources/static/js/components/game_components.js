@@ -1,4 +1,4 @@
-import {React, html} from "./deps.js";
+import {React, html} from "../deps.js";
 import {VexStaff} from "./vex_staff.js";
 import {SvgFretboard} from "./svg_fretboard.js";
 
@@ -7,8 +7,12 @@ export function StartRoundButton(props) {
     ? sendStartRound(props.ws, props.gameId)
     : null;
 
+  const text = props.status === "INIT"
+    ? "Start Game"
+    : "Next Round";
+
   return html`
-      <button onClick=${onClick}>Start Round</button>
+      <button onClick=${onClick}>${text}</button>
   `;
 }
 

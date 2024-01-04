@@ -36,7 +36,7 @@ public class Settings {
         var accidentalsToUse = Set.of(Accidental.values());
 
         var settings = new Settings();
-        settings.roundCount = 10;
+        settings.roundCount = 4;
         settings.stringsToUse = new HashSet<>(stringsToUse);
         settings.accidentalsToUse = new HashSet<>(accidentalsToUse);
         settings.openStringNotes = new ArrayList<>(Fretboard.STANDARD_GUITAR_STRINGS);

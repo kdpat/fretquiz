@@ -48,8 +48,7 @@ public class GameController {
                 .flatMap(userService::findUser)
                 .orElseThrow();
 
-        var settings = Settings.createDefault();
-        var game = gameService.createGame(user, settings);
+        var game = gameService.createLobby(user);
         log.info("game created: {}", game);
 
         var encodedId = sqids.encode(List.of(game.id()));

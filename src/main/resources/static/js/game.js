@@ -1,6 +1,6 @@
 import {html, React, ReactDOM} from "./deps.js";
 import {makeStompClient} from "./websocket.js";
-import {Fretboard, PlayerDisplay, Staff, StartRoundButton} from "./components.js";
+import {Fretboard, PlayerDisplay, Staff, StartRoundButton} from "./components/game_components.js";
 
 const gameId = parseGameIdFromPath(location.pathname);
 
@@ -59,7 +59,10 @@ function GameComponent(props) {
               clickable=${canGuess}
       />
 
-      ${canStartRound && html`<${StartRoundButton} ws=${wsRef.current} gameId=${props.gameId}/>`}
+      ${canStartRound 
+        && html`<${StartRoundButton} ws=${wsRef.current} 
+                                     gameId=${props.gameId}
+                                     status=${game?.status}/>`}
     </div>
   `;
 }

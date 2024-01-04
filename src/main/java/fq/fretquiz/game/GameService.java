@@ -28,6 +28,19 @@ public class GameService {
     }
 
     @Transactional
+    public Game createLobby(User host) {
+        var game = Game.createLobby(host);
+        return gameRepo.save(game);
+    }
+
+    @Transactional
+    public Game addPlayer(Game game, User user) {
+        var player = Player.from(user);
+        game.addPlayer(player);
+        return gameRepo.save(game);
+    }
+
+    @Transactional
     public GameUpdate startNewRound(Game game, User user) {
         var hostId = game.host().id();
         var userIsHost = Objects.equals(user.id(), hostId);

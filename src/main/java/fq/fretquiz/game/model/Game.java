@@ -50,6 +50,34 @@ public class Game {
         return game;
     }
 
+    public static Game createLobby(User host) {
+        var game = new Game();
+
+        game.host = host;
+        game.settings = Settings.createDefault();
+        game.status = Status.INIT;
+        game.createdAt = nowMillis();
+        game.rounds = new ArrayList<>();
+
+        var players = new ArrayList<Player>();
+        var hostPlayer = Player.from(host);
+
+        players.add(hostPlayer);
+        game.players = players;
+
+        return game;
+    }
+
+    public void addPlayer(Player player) {
+        if (status != Status.INIT) {
+            throw new IllegalStateException("status must be INIT");
+        }
+
+        var players = new ArrayList<>(this.players);
+        players.add(player);
+        this.players = players;
+    }
+
     public void addRound(Round round) {
         var rounds = new ArrayList<>(this.rounds);
         rounds.add(round);
