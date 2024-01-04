@@ -53,8 +53,8 @@ public class Round {
                 .anyMatch(guess -> guess.payload().playerId().equals(playerId));
     }
 
-    public boolean guessesFull(int playerCount) {
-        return guesses.size() >= playerCount;
+    public int guessCount() {
+        return guesses.size();
     }
 
     public Long id() {

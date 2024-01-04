@@ -4,7 +4,6 @@ import fq.fretquiz.auth.Auth;
 import fq.fretquiz.game.model.GameUpdate;
 import fq.fretquiz.game.model.Guess;
 import fq.fretquiz.game.model.Player;
-import fq.fretquiz.game.model.Settings;
 import fq.fretquiz.user.UserService;
 import fq.fretquiz.websocket.UserPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,7 +47,7 @@ public class GameController {
                 .flatMap(userService::findUser)
                 .orElseThrow();
 
-        var game = gameService.createLobby(user);
+        var game = gameService.create(user);
         log.info("game created: {}", game);
 
         var encodedId = sqids.encode(List.of(game.id()));

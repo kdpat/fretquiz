@@ -22,22 +22,22 @@ public class GameService {
     }
 
     @Transactional
-    public Game createGame(User host, Settings settings) {
-        var game = Game.create(host, settings);
+    public Game create(User host) {
+        var game = Game.create(host);
         return gameRepo.save(game);
     }
 
     @Transactional
-    public Game createLobby(User host) {
-        var game = Game.createLobby(host);
-        return gameRepo.save(game);
-    }
+    public GameUpdate addPlayer(Game game, User user) {
+        if (game.userIsPlaying(user.id())) {
+            return new GameUpdate.None("user is already playing");
+        }
 
-    @Transactional
-    public Game addPlayer(Game game, User user) {
         var player = Player.from(user);
         game.addPlayer(player);
-        return gameRepo.save(game);
+        game = gameRepo.save(game);
+
+        return new GameUpdate.PlayerJoined(game, player);
     }
 
     @Transactional
@@ -78,9 +78,7 @@ public class GameService {
         var guess = Guess.create(payload, isCorrect);
         round.addGuess(guess);
 
-        var playerCount = game.players().size();
-
-        if (round.guessesFull(playerCount)) {
+        if (round.guessCount() == game.playerCount()) {
             var status = game.roundsFull()
                     ? Status.GAME_OVER
                     : Status.ROUND_OVER;
@@ -91,5 +89,4 @@ public class GameService {
         game = gameRepo.save(game);
         return new GameUpdate.GuessHandled(game, guess);
     }
-
 }

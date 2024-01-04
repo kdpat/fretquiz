@@ -34,23 +34,7 @@ public class Game {
 
     private Instant createdAt;
 
-    public static Game create(User host, Settings settings) {
-        var players = new ArrayList<Player>();
-        var hostPlayer = Player.from(host);
-        players.add(hostPlayer);
-
-        var game = new Game();
-        game.host = host;
-        game.settings = settings;
-        game.status = Status.INIT;
-        game.players = players;
-        game.rounds = new ArrayList<>();
-        game.createdAt = nowMillis();
-
-        return game;
-    }
-
-    public static Game createLobby(User host) {
+    public static Game create(User host) {
         var game = new Game();
 
         game.host = host;
@@ -66,6 +50,11 @@ public class Game {
         game.players = players;
 
         return game;
+    }
+
+    public boolean userIsPlaying(Long userId) {
+        return players.stream()
+                .anyMatch(player -> player.user().id().equals(userId));
     }
 
     public void addPlayer(Player player) {
@@ -106,6 +95,10 @@ public class Game {
         return players.stream()
                 .filter(p -> p.user().id().equals(userId))
                 .findFirst();
+    }
+
+    public int playerCount() {
+        return players.size();
     }
 
     @JsonProperty
