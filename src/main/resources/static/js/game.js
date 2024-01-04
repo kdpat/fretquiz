@@ -1,6 +1,6 @@
 import {html, React, ReactDOM} from "./deps.js";
 import {makeStompClient} from "./websocket.js";
-import {Fretboard, PlayerDisplay, Staff, StartRoundButton} from "./components/game_components.js";
+import {Fretboard, Players, Staff, StartRoundButton} from "./components/game_components.js";
 
 const gameId = parseGameIdFromPath(location.pathname);
 
@@ -48,7 +48,7 @@ function GameComponent(props) {
     <div>
       <h2>Game ${props.gameId}</h2>
       <p>Status: ${game?.status}</p>
-      ${player && html`<${PlayerDisplay} player=${player}/>`}
+      <${Players} players=${game?.players || []} />
       <${Staff} notes=${notes}/>
 
       <${Fretboard}

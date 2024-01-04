@@ -88,9 +88,24 @@ function onFretboardClick(ws, gameId, playerId) {
   }
 }
 
-export function PlayerDisplay(props) {
+export function Players(props) {
   return html`
-    <div>Player: ${props.player.id} (${props.player.score} pts)</div>
+    <div>
+      <h4>Players</h4>
+      <ul>
+        ${props.players.map(player => html`
+          <li key=${player.id}>
+            <${Player} player=${player} />
+          </li>
+        `)}
+      </ul>
+    </div>
+  `;
+}
+
+export function Player(props) {
+  return html`
+    <div>Player: ${props.player.user.name}(${props.player.id}): ${props.player.score} pts</div>
   `;
 }
 
