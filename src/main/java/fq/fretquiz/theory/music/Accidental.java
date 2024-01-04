@@ -7,8 +7,9 @@ public enum Accidental {
     SHARP("#"),
     DOUBLE_SHARP("##");
 
+    private static final Accidental[] VALUES = values();
+
     public final String value;
-    private final static Accidental[] VALUES = values();
 
     Accidental(String value) {
         this.value = value;

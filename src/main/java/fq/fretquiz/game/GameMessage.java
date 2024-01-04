@@ -42,11 +42,11 @@ public sealed interface GameMessage {
         }
     }
 
-    record UpdateRejected(String reason) implements GameMessage {
+    record NoUpdate(String reason) implements GameMessage {
 
         @Override
         public Type type() {
-           return Type.UPDATE_REJECTED;
+           return Type.NO_UPDATE;
         }
     }
 
@@ -55,6 +55,6 @@ public sealed interface GameMessage {
         FOUND_GAME,
         ROUND_STARTED,
         GUESS_RESULT,
-        UPDATE_REJECTED
+        NO_UPDATE
     }
 }

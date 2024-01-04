@@ -14,13 +14,13 @@ import static fq.fretquiz.App.nowMillis;
 
 public class Auth {
 
-    private final static String ISSUER = "fq";
-    private final static String SECRET = "_secret";
-    private final static Algorithm ALGORITHM = Algorithm.HMAC256(SECRET);
+    private static final String USER_COOKIE = "_fq_user";
 
-    private final static String USER_COOKIE = "_fq_user";
+    private static final String ISSUER = "fq";
+    private static final String SECRET = "_secret";
+    private static final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET);
 
-    public final static JWTVerifier VERIFIER = JWT.require(ALGORITHM)
+    public static final JWTVerifier VERIFIER = JWT.require(ALGORITHM)
             .withIssuer(ISSUER)
             .build();
 

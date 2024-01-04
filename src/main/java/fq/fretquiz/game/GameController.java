@@ -1,5 +1,6 @@
 package fq.fretquiz.game;
 
+import fq.fretquiz.App;
 import fq.fretquiz.auth.Auth;
 import fq.fretquiz.game.model.GameUpdate;
 import fq.fretquiz.game.model.Guess;
@@ -16,7 +17,6 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.sqids.Sqids;
 
 import java.util.List;
 
@@ -25,14 +25,12 @@ public class GameController {
 
     private final UserService userService;
     private final GameService gameService;
-    private final Sqids sqids;
 
     private static final Logger log = LoggerFactory.getLogger(GameController.class);
 
-    public GameController(UserService userService, GameService gameService, Sqids sqids) {
+    public GameController(UserService userService, GameService gameService) {
         this.userService = userService;
         this.gameService = gameService;
-        this.sqids = sqids;
     }
 
     @GetMapping(value = "/game/**")
@@ -50,7 +48,7 @@ public class GameController {
         var game = gameService.create(user);
         log.info("game created: {}", game);
 
-        var encodedId = sqids.encode(List.of(game.id()));
+        var encodedId = App.encodeId(game.id());
         return "redirect:/game/" + encodedId;
     }
 
@@ -58,7 +56,7 @@ public class GameController {
     @SendToUser("/topic/game/{encodedGameId}")
     public GameMessage fetchGame(@DestinationVariable String encodedGameId,
                                  UserPrincipal principal) {
-        var gameId = sqids.decode(encodedGameId).getFirst();
+        var gameId = App.decodeId(encodedGameId);
         var game = gameService.findGame(gameId).orElse(null);
 
         if (game == null) {
@@ -76,7 +74,7 @@ public class GameController {
     @SendTo("/topic/game/{encodedGameId}")
     public GameMessage startRound(@DestinationVariable String encodedGameId,
                                   UserPrincipal principal) {
-        var gameId = sqids.decode(encodedGameId).getFirst();
+        var gameId = App.decodeId(encodedGameId);
         var user = principal.toUser();
 
         var gameUpdate = gameService.findGame(gameId)
@@ -84,7 +82,7 @@ public class GameController {
                 .orElseThrow();
 
         return switch (gameUpdate) {
-            case GameUpdate.None(String reason) -> new GameMessage.UpdateRejected(reason);
+            case GameUpdate.None(String reason) -> new GameMessage.NoUpdate(reason);
             case GameUpdate.RoundStarted(var game, var round) -> new GameMessage.RoundStarted(game, round);
             default -> throw new IllegalStateException("Unexpected value: " + gameUpdate);
         };
@@ -94,7 +92,7 @@ public class GameController {
     @SendTo("/topic/game/{encodedGameId}")
     public GameMessage handleGuess(@DestinationVariable String encodedGameId,
                                    Guess.Payload payload) {
-        var gameId = sqids.decode(encodedGameId).getFirst();
+        var gameId = App.decodeId(encodedGameId);
 
         var gameUpdate = gameService.findGame(gameId)
                 .map(game -> gameService.handleGuess(game, payload))
@@ -102,7 +100,7 @@ public class GameController {
 
         return switch (gameUpdate) {
             case GameUpdate.GuessHandled(var game, var guess) -> new GameMessage.GuessHandled(game, guess);
-            case GameUpdate.None(String reason) -> new GameMessage.UpdateRejected(reason);
+            case GameUpdate.None(String reason) -> new GameMessage.NoUpdate(reason);
             default -> throw new IllegalStateException("Unexpected value: " + gameUpdate);
         };
     }

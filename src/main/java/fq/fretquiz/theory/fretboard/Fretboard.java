@@ -72,9 +72,7 @@ public record Fretboard(List<Note> openStrings,
      */
     public Note randomNote() {
         var lowNote = openStrings.getLast();
-
-        var highNote = openStrings.getFirst()
-            .transpose(fretCount());
+        var highNote = openStrings.getFirst().transpose(fretCount());
 
         return Note.randomBetween(lowNote, highNote);
     }

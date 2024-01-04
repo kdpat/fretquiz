@@ -9,8 +9,9 @@ public enum WhiteKey {
     A("A"),
     B("B");
 
+    private static final WhiteKey[] VALUES = values();
+
     public final String value;
-    private final static WhiteKey[] VALUES = values();
 
     WhiteKey(String value) {
         this.value = value;

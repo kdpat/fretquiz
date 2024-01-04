@@ -3,7 +3,6 @@ import {makeStompClient} from "./websocket.js";
 import {Fretboard, Players, Staff, StartRoundButton} from "./components/game_components.js";
 
 const gameId = parseGameIdFromPath(location.pathname);
-
 if (gameId == null) {
   throw new Error("could not extract game id from path");
 }

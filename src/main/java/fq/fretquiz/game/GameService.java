@@ -30,7 +30,7 @@ public class GameService {
     @Transactional
     public GameUpdate addPlayer(Game game, User user) {
         if (game.userIsPlaying(user.id())) {
-            return new GameUpdate.None("user is already playing");
+            return new GameUpdate.None("User is already playing.");
         }
 
         var player = Player.from(user);
@@ -46,7 +46,7 @@ public class GameService {
         var userIsHost = Objects.equals(user.id(), hostId);
 
         if (!userIsHost) {
-            return new GameUpdate.None("User is not not host.");
+            return new GameUpdate.None("User is not host.");
         }
 
         var round = Round.create(game.settings());
@@ -59,10 +59,9 @@ public class GameService {
 
     @Transactional
     public GameUpdate handleGuess(Game game, Guess.Payload payload) {
-        var playerId = payload.playerId();
         var round = game.currentRound().orElseThrow();
 
-        if (round.playerHasGuessed(playerId)) {
+        if (round.playerHasGuessed(payload.playerId())) {
             return new GameUpdate.None("Player already guessed.");
         }
 
@@ -71,14 +70,15 @@ public class GameService {
         var isCorrect = round.noteToGuess().isEnharmonicWith(guessedNote);
 
         if (isCorrect) {
-            var player = game.findPlayer(playerId).orElseThrow();
+            var player = game.findPlayer(payload.playerId()).orElseThrow();
             player.incrementScore();
         }
 
         var guess = Guess.create(payload, isCorrect);
         round.addGuess(guess);
 
-        if (round.guessCount() == game.playerCount()) {
+        var roundIsOver = round.guessCount() == game.playerCount();
+        if (roundIsOver) {
             var status = game.roundsFull()
                     ? Status.GAME_OVER
                     : Status.ROUND_OVER;
