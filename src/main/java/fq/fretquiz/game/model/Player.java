@@ -27,6 +27,10 @@ public class Player {
         score++;
     }
 
+    public void decrementScore() {
+        score--;
+    }
+
     @JsonProperty
     public Long id() {
         return id;

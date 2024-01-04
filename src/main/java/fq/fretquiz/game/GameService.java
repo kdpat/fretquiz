@@ -60,8 +60,9 @@ public class GameService {
     @Transactional
     public GameUpdate handleGuess(Game game, Guess.Payload payload) {
         var round = game.currentRound().orElseThrow();
+        var player = game.findPlayer(payload.playerId()).orElseThrow();
 
-        if (round.playerHasGuessed(payload.playerId())) {
+        if (round.playerHasGuessed(player.id())) {
             return new GameUpdate.None("Player already guessed.");
         }
 
@@ -70,8 +71,9 @@ public class GameService {
         var isCorrect = round.noteToGuess().isEnharmonicWith(guessedNote);
 
         if (isCorrect) {
-            var player = game.findPlayer(payload.playerId()).orElseThrow();
             player.incrementScore();
+        } else {
+            player.decrementScore();
         }
 
         var guess = Guess.create(payload, isCorrect);

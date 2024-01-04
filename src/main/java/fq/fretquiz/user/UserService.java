@@ -1,8 +1,11 @@
 package fq.fretquiz.user;
 
+import fq.fretquiz.auth.Auth;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.http.HttpRequest;
 import java.util.Optional;
 
 @Service
@@ -32,5 +35,11 @@ public class UserService {
     public User updateName(User user, String newName) {
         user.setName(newName);
         return userRepo.save(user);
+    }
+
+    public Optional<User> fetchUserFromRequest(HttpServletRequest request) {
+        return Auth.findUserIdToken(request.getCookies())
+                .flatMap(Auth::decodeUserIdToken)
+                .flatMap(this::findUser);
     }
 }

@@ -44,7 +44,7 @@ function GameComponent(props) {
   }, [])
 
   return html`
-    <div class="GameComponent">
+    <div className="GameComponent">
       <div>
         <h2>Game ${props.gameId}</h2>
         <p>Status: ${game?.status}</p>
@@ -64,7 +64,7 @@ function GameComponent(props) {
                                      status=${game?.status}/>`}
       </div>
 
-      <div class="game-info">
+      <div className="game-info">
         <${Players} players=${game?.players || []} />
       </div>
     </div>

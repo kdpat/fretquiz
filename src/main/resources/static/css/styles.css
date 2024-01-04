@@ -3,16 +3,17 @@
     padding: 0;
 }
 
-body, h2, nav, li {
-    border: 1px solid black;
-}
+/*body, h2, nav, li {*/
+/*    border: 1px solid black;*/
+/*}*/
 
 body {
     font-family: sans-serif;
     max-width: 600px;
-    margin: 0 auto;
+    margin: 0.5rem auto;
     padding: 0;
     text-align: center;
+    height: 100%;
 }
 
 ul {
@@ -30,7 +31,6 @@ li a {
 
 .GameComponent {
     display: flex;
-    height: 100%;
 }
 
 .GameComponent > * {
@@ -40,4 +40,8 @@ li a {
 .game-info {
     display: flex;
     flex-direction: column;
+}
+
+.create-game-button {
+    margin-top: 1rem;
 }

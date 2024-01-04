@@ -12,7 +12,7 @@ export function StartRoundButton(props) {
     : "Next Round";
 
   return html`
-      <button class="StartRoundButton" onClick=${onClick}>${text}</button>
+      <button className="StartRoundButton" onClick=${onClick}>${text}</button>
   `;
 }
 
@@ -49,7 +49,7 @@ export function Fretboard(props) {
   const svgRef = React.useRef(null); // the svg fretboard
 
   const onClick = onFretboardClick(props.ws, props.gameId, props.playerId);
-  const opts = props.clickable ? clickableOpts(onClick) : {};
+  const opts = props.clickable ? {onClick, drawDotOnHover: true} : {};
 
   // create svg
   React.useEffect(() => {
@@ -74,10 +74,6 @@ export function Fretboard(props) {
   }, [props.dots]);
 
   return html`<div ref=${divRef}/>`;
-}
-
-function clickableOpts(onClick) {
-  return {onClick, drawDotOnHover: true};
 }
 
 function onFretboardClick(ws, gameId, playerId) {
