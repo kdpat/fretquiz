@@ -74,8 +74,9 @@ function makeGameSocket(gameId, setters) {
 function onStompConnect(client, gameId, setters) {
   console.log("stomp client connected", client);
 
-  client.subscribe(`/topic/game/${gameId}`, resp => onGameMessage(resp, setters));
-  client.subscribe(`/user/topic/game/${gameId}`, resp => onGameMessage(resp, setters));
+  const onMessage = resp => onGameMessage(resp, setters);
+  client.subscribe(`/topic/game/${gameId}`, onMessage);
+  client.subscribe(`/user/topic/game/${gameId}`, onMessage);
 
   client.publish({destination: `/app/game/${gameId}`});
 }
@@ -95,8 +96,8 @@ function onGameMessage(resp, {setGame, setPlayerId}) {
     case "GUESS_RESULT":
       setGame(message.game);
       break;
-    default:
-      throw new Error(`unknown game message type: ${message.type}`);
+    // default:
+    //   throw new Error(`unknown game message type: ${message.type}`);
   }
 }
 

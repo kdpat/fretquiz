@@ -17,18 +17,23 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.sqids.Sqids;
+
+import java.util.List;
 
 @Controller
 public class GameController {
 
     private final UserService userService;
     private final GameService gameService;
+    private final Sqids sqids;
 
     private static final Logger log = LoggerFactory.getLogger(GameController.class);
 
-    public GameController(UserService userService, GameService gameService) {
+    public GameController(UserService userService, GameService gameService, Sqids sqids) {
         this.userService = userService;
         this.gameService = gameService;
+        this.sqids = sqids;
     }
 
     @GetMapping(value = "/game/**")
@@ -47,12 +52,15 @@ public class GameController {
         var game = gameService.createGame(user, settings);
         log.info("game created: {}", game);
 
-        return "redirect:/game/" + game.id();
+        var encodedId = sqids.encode(List.of(game.id()));
+        return "redirect:/game/" + encodedId;
     }
 
-    @MessageMapping("/game/{gameId}")
-    @SendToUser("/topic/game/{gameId}")
-    public GameMessage fetchGame(@DestinationVariable Long gameId, UserPrincipal principal) {
+    @MessageMapping("/game/{encodedGameId}")
+    @SendToUser("/topic/game/{encodedGameId}")
+    public GameMessage fetchGame(@DestinationVariable String encodedGameId,
+                                 UserPrincipal principal) {
+        var gameId = sqids.decode(encodedGameId).getFirst();
         var game = gameService.findGame(gameId).orElse(null);
 
         if (game == null) {
@@ -66,9 +74,11 @@ public class GameController {
         return new GameMessage.FoundGame(game, playerId);
     }
 
-    @MessageMapping("/game/{gameId}/start")
-    @SendTo("/topic/game/{gameId}")
-    public GameMessage startRound(@DestinationVariable Long gameId, UserPrincipal principal) {
+    @MessageMapping("/game/{encodedGameId}/start")
+    @SendTo("/topic/game/{encodedGameId}")
+    public GameMessage startRound(@DestinationVariable String encodedGameId,
+                                  UserPrincipal principal) {
+        var gameId = sqids.decode(encodedGameId).getFirst();
         var user = principal.toUser();
 
         var gameUpdate = gameService.findGame(gameId)
@@ -82,9 +92,12 @@ public class GameController {
         };
     }
 
-    @MessageMapping("/game/{gameId}/guess")
-    @SendTo("/topic/game/{gameId}")
-    public GameMessage handleGuess(@DestinationVariable Long gameId, Guess.Payload payload) {
+    @MessageMapping("/game/{encodedGameId}/guess")
+    @SendTo("/topic/game/{encodedGameId}")
+    public GameMessage handleGuess(@DestinationVariable String encodedGameId,
+                                   Guess.Payload payload) {
+        var gameId = sqids.decode(encodedGameId).getFirst();
+
         var gameUpdate = gameService.findGame(gameId)
                 .map(game -> gameService.handleGuess(game, payload))
                 .orElseThrow();

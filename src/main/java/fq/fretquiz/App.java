@@ -2,6 +2,8 @@ package fq.fretquiz;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.sqids.Sqids;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -23,5 +25,10 @@ public class App {
 		var random = ThreadLocalRandom.current();
 		var index = random.nextInt(list.size());
 		return list.get(index);
+	}
+
+	@Bean
+	public Sqids sqids() {
+		return Sqids.builder().build();
 	}
 }
