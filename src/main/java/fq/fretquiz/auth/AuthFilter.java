@@ -46,8 +46,6 @@ public class AuthFilter extends OncePerRequestFilter {
 
                 if (userId == null || !userService.userExists(userId)) {
                     addNewUserCookie(response);
-                } else {
-                    log.info("user found: {}", userId);
                 }
             }
         }

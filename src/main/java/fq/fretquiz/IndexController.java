@@ -23,6 +23,11 @@ public class IndexController {
     @GetMapping(value = "/")
     public String showIndex(HttpServletRequest request, Model model) {
         User user = userService.fetchUserFromRequest(request).orElse(null);
+        if (user == null) {
+            log.error("user is null: {}", request);
+            return "redirect:/";
+        }
+
         model.addAttribute("user", user);
         log.info("found user: {}", user);
         return "index";

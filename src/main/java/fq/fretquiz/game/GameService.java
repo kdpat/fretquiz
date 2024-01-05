@@ -24,7 +24,7 @@ public class GameService {
     }
 
     @Transactional
-    public Game create(User host) {
+    public Game createWithHost(User host) {
         var game = Game.create(host);
         return gameRepo.save(game);
     }
@@ -61,8 +61,8 @@ public class GameService {
 
     @Transactional
     public GameUpdate handleGuess(Game game, Guess.Payload payload) {
-        var round = game.currentRound().orElseThrow();
-        var player = game.findPlayer(payload.playerId()).orElseThrow();
+        Round round = game.currentRound().orElseThrow();
+        Player player = game.findPlayer(payload.playerId()).orElseThrow();
 
         if (round.playerHasGuessed(player.id())) {
             return new GameUpdate.None("Player already guessed.");

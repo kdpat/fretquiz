@@ -16,6 +16,10 @@ body {
     height: 100%;
 }
 
+/*button {*/
+/*    max-width: 8rem;*/
+/*}*/
+
 ul {
     list-style-type: none;
     display: flex;
@@ -29,6 +33,10 @@ li a {
     text-decoration: none;
 }
 
+.create-game-button {
+    margin-top: 1rem;
+}
+
 .GameComponent {
     display: flex;
 }
@@ -40,8 +48,14 @@ li a {
 .game-info {
     display: flex;
     flex-direction: column;
+    /*margin: auto;*/
 }
 
-.create-game-button {
-    margin-top: 1rem;
+.game-info > button {
+   margin-top: 1rem;
+}
+
+.Players ul {
+    display: flex;
+    flex-direction: column;
 }

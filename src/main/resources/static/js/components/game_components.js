@@ -2,24 +2,6 @@ import {React, html} from "../deps.js";
 import {VexStaff} from "./vex_staff.js";
 import {SvgFretboard} from "./svg_fretboard.js";
 
-export function StartRoundButton(props) {
-  const onClick = props.ws?.connected
-    ? sendStartRound(props.ws, props.gameId)
-    : null;
-
-  const text = props.status === "INIT"
-    ? "Start Game"
-    : "Next Round";
-
-  return html`
-      <button className="StartRoundButton" onClick=${onClick}>${text}</button>
-  `;
-}
-
-function sendStartRound(ws, gameId) {
-  return () => ws.publish({destination: `/app/game/${gameId}/start`});
-}
-
 export function Staff(props) {
   const width = 200;
   const height = 130;
@@ -49,7 +31,9 @@ export function Fretboard(props) {
   const svgRef = React.useRef(null); // the svg fretboard
 
   const onClick = onFretboardClick(props.ws, props.gameId, props.playerId);
-  const opts = props.clickable ? {onClick, drawDotOnHover: true} : {};
+  const opts = props.clickable
+    ? {onClick, drawDotOnHover: true}
+    : {};
 
   // create svg
   React.useEffect(() => {
@@ -86,7 +70,7 @@ function onFretboardClick(ws, gameId, playerId) {
 
 export function Players(props) {
   return html`
-    <div>
+    <div className="Players">
       <h4>Players</h4>
       <ul>
         ${props.players.map(player => html`
@@ -103,6 +87,42 @@ export function Player(props) {
   return html`
     <div>Player: ${props.player.user.name}(${props.player.id}): ${props.player.score} pts</div>
   `;
+}
+
+export function StartRoundButton(props) {
+  const onClick = props.ws?.connected
+    ? sendStartRound(props.ws, props.gameId)
+    : null;
+
+  const text = props.status === "INIT"
+    ? "Start Game"
+    : "Next Round";
+
+  return html`
+      <button className="StartRoundButton" onClick=${onClick}>
+        ${text}
+      </button>
+  `;
+}
+
+function sendStartRound(ws, gameId) {
+  return () => ws.publish({destination: `/app/game/${gameId}/start`});
+}
+
+export function JoinGameButton(props) {
+  const onClick = props.ws?.connected
+    ? sendJoinGame(props.ws, props.gameId)
+    : null;
+
+  return html`
+    <button className="JoinGameButton" onClick=${onClick}>
+      Join Game
+    </button>
+  `;
+}
+
+function sendJoinGame(ws, gameId) {
+  return () => ws.publish({destination: `/app/game/${gameId}/join`});
 }
 
 function StringCheckbox(props) {

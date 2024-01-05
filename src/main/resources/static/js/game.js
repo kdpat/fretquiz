@@ -1,8 +1,11 @@
 import {html, React, ReactDOM} from "./deps.js";
 import {makeStompClient} from "./websocket.js";
-import {Fretboard, Players, Staff, StartRoundButton} from "./components/game_components.js";
+import {Fretboard, JoinGameButton, Players, Staff, StartRoundButton} from "./components/game_components.js";
 
-const gameId = parseGameIdFromPath(location.pathname);
+// location.pathname will look like "/game/cCR"
+const pathParts = location.pathname.split("/");
+const gameId = pathParts[2];
+
 if (gameId == null) {
   throw new Error("could not extract game id from path");
 }
@@ -28,20 +31,24 @@ function GameComponent(props) {
   // wrap note in a list, so we can pass it to the Staff component
   const notes = noteToGuess ? [noteToGuess] : [];
 
-  const player = game && playerId && findPlayer(game.players, playerId);
-  const canGuess = round && playerId && playerCanGuess(round.guesses, playerId);
+  const players = game?.players || [];
+  const player = findPlayer(players, playerId);
 
-  const userIsHost = player?.userId === game?.hostId;
   const isStartStatus = game?.status === "INIT" || game?.status === "ROUND_OVER";
+  const canJoinGame = playerId == null && isStartStatus;
+
+  const userIsHost = player && (player.user.id === game?.host.id);
   const canStartRound = userIsHost && isStartStatus;
 
   const guess = round && playerId && findPlayerGuess(round.guesses, playerId);
+  const playerCanGuess = round && playerId && guess == null;
+
   const dots = dotsToDraw(guess, round?.correctFretCoords);
 
   React.useEffect(() => {
     wsRef.current = makeGameSocket(props.gameId, {setGame, setPlayerId});
     return () => wsRef.current?.deactivate();
-  }, [])
+  }, []);
 
   return html`
     <div className="GameComponent">
@@ -55,7 +62,7 @@ function GameComponent(props) {
               gameId=${props.gameId}
               playerId=${playerId}
               dots=${dots}
-              clickable=${canGuess}
+              clickable=${playerCanGuess}
           />
 
           ${canStartRound
@@ -65,7 +72,11 @@ function GameComponent(props) {
       </div>
 
       <div className="game-info">
-        <${Players} players=${game?.players || []} />
+        <${Players} players=${players}/>
+
+        ${canJoinGame
+        && html`<${JoinGameButton} ws=${wsRef.current}
+                                   gameId=${props.gameId}/>`}
       </div>
     </div>
   `;
@@ -83,7 +94,6 @@ function onStompConnect(client, gameId, setters) {
   const onMessage = resp => onGameMessage(resp, setters);
   client.subscribe(`/topic/game/${gameId}`, onMessage);
   client.subscribe(`/user/topic/game/${gameId}`, onMessage);
-  client.publish({destination: `/app/game/${gameId}/fetch`});
 }
 
 function onGameMessage(resp, {setGame, setPlayerId}) {
@@ -91,6 +101,9 @@ function onGameMessage(resp, {setGame, setPlayerId}) {
   console.log("resp", message);
 
   switch (message.type) {
+    case "GAME_NOT_FOUND":
+      console.error("game not found");
+      break;
     case "FOUND_GAME":
       setGame(message.game);
       setPlayerId(message.playerId);
@@ -101,13 +114,13 @@ function onGameMessage(resp, {setGame, setPlayerId}) {
     case "GUESS_RESULT":
       setGame(message.game);
       break;
-    case "GAME_NOT_FOUND":
-      console.error("game not found");
-      // redirect to home
-      // window.location.href = "/";
+    case "PLAYER_JOINED":
+      setGame(message.game);
       break;
-    // default:
-    //   throw new Error(`unknown game message type: ${message.type}`);
+    case "NO_UPDATE":
+      break;
+    default:
+      throw new Error(`unknown game message type: ${message.type}`);
   }
 }
 
@@ -131,19 +144,10 @@ function dotsToDraw(guess, correctFretCoords) {
   return dots;
 }
 
-function parseGameIdFromPath(pathname) {
-  const parts = pathname.split("/");
-  return parts[2];
-}
-
 function findPlayer(players, playerId) {
   return players.find(player => player.id === playerId);
 }
 
 function findPlayerGuess(guesses, playerId) {
   return guesses.find(guess => guess.payload.playerId === playerId);
-}
-
-function playerCanGuess(guesses, playerId) {
-  return !guesses.some(guess => guess.payload.playerId === playerId);
 }

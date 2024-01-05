@@ -4,7 +4,6 @@ import fq.fretquiz.App;
 import fq.fretquiz.game.model.Game;
 import fq.fretquiz.game.model.GameUpdate;
 import fq.fretquiz.game.model.Guess;
-import fq.fretquiz.game.model.Player;
 import fq.fretquiz.user.User;
 import fq.fretquiz.user.UserService;
 import fq.fretquiz.websocket.WsPrincipal;
@@ -14,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,35 +38,16 @@ public class GameController {
     @PostMapping("/game")
     public String handleCreateGame(HttpServletRequest request) {
         User user = userService.fetchUserFromRequest(request).orElseThrow();
-        Game game = gameService.create(user);
+        Game game = gameService.createWithHost(user);
         log.info("game created: {}", game);
 
         String encodedId = App.encodeId(game.id());
         return "redirect:/game/" + encodedId;
     }
 
-    @MessageMapping("/game/{encodedGameId}/fetch")
-    @SendToUser("/topic/game/{encodedGameId}")
-    public GameMessage fetchGame(@DestinationVariable String encodedGameId,
-                                 WsPrincipal principal) {
-        log.info("user fetching game: {}", principal);
-        Long gameId = App.decodeId(encodedGameId);
-        Game game = gameService.findGame(gameId).orElse(null);
-
-        if (game == null) {
-            return GameMessage.GAME_NOT_FOUND;
-        }
-
-        Long playerId = game.findPlayerByUserId(principal.id())
-                .map(Player::id)
-                .orElse(null);
-
-        return new GameMessage.FoundGame(game, playerId);
-    }
-
     @MessageMapping("/game/{encodedGameId}/join")
     @SendTo("/topic/game/{encodedGameId}")
-    public GameMessage joinGame(String encodedGameId, WsPrincipal principal) {
+    public GameMessage joinGame(@DestinationVariable String encodedGameId, WsPrincipal principal) {
         Long gameId = App.decodeId(encodedGameId);
         Game game = gameService.findGame(gameId).orElseThrow();
         User user = userService.findUser(principal.id()).orElseThrow();
