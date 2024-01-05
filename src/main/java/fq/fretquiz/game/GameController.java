@@ -1,8 +1,11 @@
 package fq.fretquiz.game;
 
 import fq.fretquiz.App;
+import fq.fretquiz.game.model.Game;
+import fq.fretquiz.game.model.GameUpdate;
 import fq.fretquiz.game.model.Guess;
 import fq.fretquiz.game.model.Player;
+import fq.fretquiz.user.User;
 import fq.fretquiz.user.UserService;
 import fq.fretquiz.websocket.WsPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,11 +39,11 @@ public class GameController {
 
     @PostMapping("/game")
     public String handleCreateGame(HttpServletRequest request) {
-        var user = userService.fetchUserFromRequest(request).orElseThrow();
-        var game = gameService.create(user);
+        User user = userService.fetchUserFromRequest(request).orElseThrow();
+        Game game = gameService.create(user);
         log.info("game created: {}", game);
 
-        var encodedId = App.encodeId(game.id());
+        String encodedId = App.encodeId(game.id());
         return "redirect:/game/" + encodedId;
     }
 
@@ -49,14 +52,14 @@ public class GameController {
     public GameMessage fetchGame(@DestinationVariable String encodedGameId,
                                  WsPrincipal principal) {
         log.info("user fetching game: {}", principal);
-        var gameId = App.decodeId(encodedGameId);
-        var game = gameService.findGame(gameId).orElse(null);
+        Long gameId = App.decodeId(encodedGameId);
+        Game game = gameService.findGame(gameId).orElse(null);
 
         if (game == null) {
             return GameMessage.GAME_NOT_FOUND;
         }
 
-        var playerId = game.findPlayerByUserId(principal.id())
+        Long playerId = game.findPlayerByUserId(principal.id())
                 .map(Player::id)
                 .orElse(null);
 
@@ -66,19 +69,19 @@ public class GameController {
     @MessageMapping("/game/{encodedGameId}/join")
     @SendTo("/topic/game/{encodedGameId}")
     public GameMessage joinGame(String encodedGameId, WsPrincipal principal) {
-        var gameId = App.decodeId(encodedGameId);
-        var game = gameService.findGame(gameId).orElseThrow();
-        var user = userService.findUser(principal.id()).orElseThrow();
-        var gameUpdate = gameService.addPlayer(game, user);
-        return GameMessage.from(gameUpdate);
+        Long gameId = App.decodeId(encodedGameId);
+        Game game = gameService.findGame(gameId).orElseThrow();
+        User user = userService.findUser(principal.id()).orElseThrow();
+        GameUpdate update = gameService.addPlayer(game, user);
+        return GameMessage.from(update);
     }
 
     @MessageMapping("/game/{encodedGameId}/start")
     @SendTo("/topic/game/{encodedGameId}")
     public GameMessage startRound(@DestinationVariable String encodedGameId,
                                   WsPrincipal principal) {
-        var gameId = App.decodeId(encodedGameId);
-        var user = userService.findUser(principal.id()).orElseThrow();
+        Long gameId = App.decodeId(encodedGameId);
+        User user = userService.findUser(principal.id()).orElseThrow();
 
         return gameService.findGame(gameId)
                 .map(game -> gameService.startNewRound(game, user))
@@ -90,7 +93,7 @@ public class GameController {
     @SendTo("/topic/game/{encodedGameId}")
     public GameMessage handleGuess(@DestinationVariable String encodedGameId,
                                    Guess.Payload payload) {
-        var gameId = App.decodeId(encodedGameId);
+        Long gameId = App.decodeId(encodedGameId);
 
         return gameService.findGame(gameId)
                 .map(game -> gameService.handleGuess(game, payload))

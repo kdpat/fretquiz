@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.Embeddable;
 
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static fq.fretquiz.App.randomElem;
@@ -24,7 +25,7 @@ public record Note(WhiteKey whiteKey,
      * @return a Note
      */
     public static Note from(String name) {
-        var matcher = regexPattern.matcher(name);
+        Matcher matcher = regexPattern.matcher(name);
 
         if (!matcher.matches()) {
             throw new IllegalArgumentException();
@@ -34,7 +35,7 @@ public record Note(WhiteKey whiteKey,
         var whiteKey = WhiteKey.valueOf(matcher.group(1));
 
         // find the accidental, if it exists
-        var match2 = matcher.group(2);
+        String match2 = matcher.group(2);
 
         // if there was no accidental, set it to be an empty string instead of null so it can be parsed correctly
         var accidental = Accidental.from(match2 == null ? "" : match2);
@@ -44,16 +45,16 @@ public record Note(WhiteKey whiteKey,
     }
 
     public static Note random() {
-        var whiteKey = randomElem(List.of(WhiteKey.values()));
-        var accidental = randomElem(List.of(Accidental.values()));
-        var octave = randomElem(List.of(Octave.values()));
+        WhiteKey whiteKey = randomElem(List.of(WhiteKey.values()));
+        Accidental accidental = randomElem(List.of(Accidental.values()));
+        Octave octave = randomElem(List.of(Octave.values()));
 
         return new Note(whiteKey, accidental, octave);
     }
 
     public static Note randomBetween(Note low, Note high) {
-        var lowMidi = low.midiNum();
-        var highMidi = high.midiNum();
+        int lowMidi = low.midiNum();
+        int highMidi = high.midiNum();
 
         Note note;
         int midi;
@@ -95,9 +96,9 @@ public record Note(WhiteKey whiteKey,
     public Note next() {
         // If we're at pitchClass == 11 (the notes "B", "A##", "Cb"), increment the octave.
         // Otherwise, the octave stays the same.
-        var oct = pitchClass() == 11 ? octave.next() : octave;
-        var key = whiteKey;
-        var acc = accidental;
+        Octave oct = pitchClass() == 11 ? octave.next() : octave;
+        WhiteKey key = whiteKey;
+        Accidental acc = accidental;
 
         if (accidental == Accidental.NONE) {
             if (whiteKey == WhiteKey.B || whiteKey == WhiteKey.E) {

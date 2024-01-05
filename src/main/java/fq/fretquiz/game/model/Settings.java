@@ -32,8 +32,8 @@ public class Settings {
     private Fretboard fretboard;
 
     public static Settings createDefault() {
-        var stringsToUse = Set.of(1, 2, 3, 4, 5, 6);
-        var accidentalsToUse = Set.of(Accidental.values());
+        Set<Integer> stringsToUse = Set.of(1, 2, 3, 4, 5, 6);
+        Set<Accidental> accidentalsToUse = Set.of(Accidental.values());
 
         var settings = new Settings();
         settings.roundCount = 4;

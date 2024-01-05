@@ -4,9 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.lang.NonNull;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
+import java.security.Principal;
 import java.util.Objects;
 
 @Component
@@ -16,14 +18,14 @@ public class WsSubscribeListener implements ApplicationListener<SessionSubscribe
 
     @Override
     public void onApplicationEvent(@NonNull SessionSubscribeEvent event) {
-        var headers = event.getMessage().getHeaders();
-        var destination = (String) Objects.requireNonNull(headers.get("simpDestination"));
-        var parts = destination.split("/");
+        MessageHeaders headers = event.getMessage().getHeaders();
+        String destination = (String) Objects.requireNonNull(headers.get("simpDestination"));
+        String[] parts = destination.split("/");
 
         // handle subs to /user/topic/game/{gameId}
         if (destination.startsWith("/user") && parts.length == 5) {
-            var gameId = Objects.requireNonNull(parts[4]);
-            var user = Objects.requireNonNull(event.getUser());
+            String gameId = Objects.requireNonNull(parts[4]);
+            Principal user = Objects.requireNonNull(event.getUser());
             log.info("{} subbed to game {}", user, gameId);
         }
     }

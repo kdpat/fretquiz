@@ -19,20 +19,20 @@ public record Fretboard(List<Note> openStrings,
             );
 
     public static Fretboard create(List<Note> openStrings, FretSpan fretSpan) {
-        var notes = calculateNotes(openStrings, fretSpan);
+        Map<FretCoord, Note> notes = calculateNotes(openStrings, fretSpan);
         return new Fretboard(openStrings, fretSpan, notes);
     }
 
     public static Map<FretCoord, Note> calculateNotes(List<Note> openStrings, FretSpan fretSpan) {
         var notes = new HashMap<FretCoord, Note>();
-        var stringCount = openStrings.size();
+        int stringCount = openStrings.size();
 
         for (int string = 0; string < stringCount; string++) {
             for (int fret = fretSpan.startFret(); fret <= fretSpan.endFret(); fret++) {
                 var fretCoord = new FretCoord(string + 1, fret);
-                var openStringNote = openStrings.get(string);
-                var note = openStringNote.transpose(fret);
-                notes.put(fretCoord, note);
+                Note openString = openStrings.get(string);
+                Note transposed = openString.transpose(fret);
+                notes.put(fretCoord, transposed);
             }
         }
 
@@ -43,7 +43,7 @@ public record Fretboard(List<Note> openStrings,
      * @return the Note at the given Fretboard.Coord (string & fret)
      */
     public Optional<Note> findNote(FretCoord coord) {
-        var note = fretCoordNotes.get(coord);
+        Note note = fretCoordNotes.get(coord);
         return Optional.ofNullable(note);
     }
 
@@ -70,10 +70,10 @@ public record Fretboard(List<Note> openStrings,
      * @return a random note on that can be played on the fretboard.
      */
     public Note randomNote() {
-        var lowNote = openStrings.getLast();
-        var highNote = openStrings.getFirst().transpose(fretCount());
+        Note low = openStrings.getLast();
+        Note high = openStrings.getFirst().transpose(fretCount());
 
-        return Note.randomBetween(lowNote, highNote);
+        return Note.randomBetween(low, high);
     }
 
     public List<Note> notesOnString(int string) {
@@ -83,9 +83,9 @@ public record Fretboard(List<Note> openStrings,
 
         var notes = new ArrayList<Note>();
 
-        for (var fret = fretSpan.startFret(); fret <= fretSpan.endFret(); fret++) {
+        for (int fret = fretSpan.startFret(); fret <= fretSpan.endFret(); fret++) {
             var fretCoord = new FretCoord(string, fret);
-            var note = findNote(fretCoord).orElseThrow();
+            Note note = findNote(fretCoord).orElseThrow();
             notes.add(note);
         }
 

@@ -1,6 +1,8 @@
 package fq.fretquiz.game;
 
 import fq.fretquiz.game.model.*;
+import fq.fretquiz.theory.fretboard.Fretboard;
+import fq.fretquiz.theory.music.Note;
 import fq.fretquiz.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,8 +44,8 @@ public class GameService {
 
     @Transactional
     public GameUpdate startNewRound(Game game, User user) {
-        var hostId = game.host().id();
-        var userIsHost = Objects.equals(user.id(), hostId);
+        Long hostId = game.host().id();
+        boolean userIsHost = Objects.equals(user.id(), hostId);
 
         if (!userIsHost) {
             return new GameUpdate.None("User must be host to start round.");
@@ -66,9 +68,9 @@ public class GameService {
             return new GameUpdate.None("Player already guessed.");
         }
 
-        var fretboard = game.settings().fretboard();
-        var guessedNote = fretboard.findNote(payload.fretCoord()).orElseThrow();
-        var isCorrect = round.noteToGuess().isEnharmonicWith(guessedNote);
+        Fretboard fretboard = game.settings().fretboard();
+        Note guessedNote = fretboard.findNote(payload.fretCoord()).orElseThrow();
+        boolean isCorrect = round.noteToGuess().isEnharmonicWith(guessedNote);
 
         if (isCorrect) {
             player.incrementScore();
@@ -79,9 +81,9 @@ public class GameService {
         var guess = Guess.create(payload, isCorrect);
         round.addGuess(guess);
 
-        var roundIsOver = round.guessCount() == game.playerCount();
+        boolean roundIsOver = round.guessCount() == game.playerCount();
         if (roundIsOver) {
-            var status = game.roundsFull()
+            Status status = game.roundsFull()
                     ? Status.GAME_OVER
                     : Status.ROUND_OVER;
 

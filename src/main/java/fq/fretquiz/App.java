@@ -20,8 +20,8 @@ public class App {
 	}
 
 	public static <T> T randomElem(List<T> list) {
-		var random = ThreadLocalRandom.current();
-		var index = random.nextInt(list.size());
+        ThreadLocalRandom rand = ThreadLocalRandom.current();
+        int index = rand.nextInt(list.size());
 		return list.get(index);
 	}
 
@@ -38,8 +38,8 @@ public class App {
 		var stringBuilder = new StringBuilder();
 
 		while (id > 0) {
-			var nextIndex = (int) (id % ENCODE_CHARS_LEN);
-			var nextChar = ENCODE_CHARS.charAt(nextIndex);
+			int nextIndex = (int) (id % ENCODE_CHARS_LEN);
+			char nextChar = ENCODE_CHARS.charAt(nextIndex);
 			stringBuilder.append(nextChar);
 			id /= ENCODE_CHARS_LEN;
 		}
@@ -49,12 +49,12 @@ public class App {
 
 
 	public static Long decodeId(String encodedId) {
-		var id = 0L;
-		var multiplier = 1L;
+		long id = 0;
+		long multiplier = 1;
 
 		for (int i = encodedId.length() - 1; i >= 0; i--) {
-			var nextChar = encodedId.charAt(i);
-			var nextIndex = ENCODE_CHARS.indexOf(nextChar);
+			char nextChar = encodedId.charAt(i);
+			int nextIndex = ENCODE_CHARS.indexOf(nextChar);
 			id += (nextIndex * multiplier);
 			multiplier *= ENCODE_CHARS_LEN;
 		}

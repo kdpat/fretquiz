@@ -1,7 +1,9 @@
 package fq.fretquiz.websocket;
 
 import fq.fretquiz.auth.Auth;
+import fq.fretquiz.user.User;
 import fq.fretquiz.user.UserService;
+import jakarta.servlet.http.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -57,8 +59,8 @@ public class WsConfig implements WebSocketMessageBrokerConfigurer {
                                            @NonNull WebSocketHandler handler,
                                            @NonNull Map<String, Object> attrs) {
                 if (request instanceof ServletServerHttpRequest servletReq) {
-                    var cookies = servletReq.getServletRequest().getCookies();
-                    var userToken = Auth.findUserIdToken(cookies).orElseThrow();
+                    Cookie[] cookies = servletReq.getServletRequest().getCookies();
+                    String userToken = Auth.findUserIdToken(cookies).orElseThrow();
                     attrs.put("userToken", userToken);
                     return true;
                 }
@@ -82,9 +84,9 @@ public class WsConfig implements WebSocketMessageBrokerConfigurer {
             protected Principal determineUser(@NonNull ServerHttpRequest request,
                                               @NonNull WebSocketHandler handler,
                                               @NonNull Map<String, Object> attrs) {
-                var userToken = (String) attrs.get("userToken");
-                var userId = Auth.decodeUserIdToken(userToken).orElseThrow();
-                var user = userService.findUser(userId).orElseThrow();
+                String userToken = (String) attrs.get("userToken");
+                Long userId = Auth.decodeUserIdToken(userToken).orElseThrow();
+                User user = userService.findUser(userId).orElseThrow();
                 return new WsPrincipal(user.id());
             }
         };

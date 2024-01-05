@@ -1,5 +1,6 @@
 package fq.fretquiz;
 
+import fq.fretquiz.user.User;
 import fq.fretquiz.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -21,7 +22,7 @@ public class IndexController {
 
     @GetMapping(value = "/")
     public String showIndex(HttpServletRequest request, Model model) {
-        var user = userService.fetchUserFromRequest(request).orElse(null);
+        User user = userService.fetchUserFromRequest(request).orElse(null);
         model.addAttribute("user", user);
         log.info("found user: {}", user);
         return "index";

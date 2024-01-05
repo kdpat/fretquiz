@@ -3,9 +3,11 @@ package fq.fretquiz.auth;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import fq.fretquiz.user.User;
 import jakarta.servlet.http.Cookie;
 
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Optional;
@@ -34,7 +36,7 @@ public class Auth {
     }
 
     public static String encodeUserIdToken(Long userId) {
-        var now = nowMillis();
+        Instant now = nowMillis();
 
         return JWT.create()
                 .withClaim("userId", userId)
@@ -46,8 +48,8 @@ public class Auth {
 
     public static Optional<Long> decodeUserIdToken(String token) {
         try {
-            var decodedJWT = VERIFIER.verify(token);
-            var userId = decodedJWT.getClaim("userId").asLong();
+            DecodedJWT jwt = VERIFIER.verify(token);
+            Long userId = jwt.getClaim("userId").asLong();
             return Optional.of(userId);
         } catch (Exception _e) {
             return Optional.empty();
@@ -55,7 +57,7 @@ public class Auth {
     }
 
     public static Cookie createUserCookie(User user) {
-        var token = encodeUserIdToken(user.id());
+        String token = encodeUserIdToken(user.id());
         var cookie = new Cookie(USER_COOKIE, token);
         cookie.setAttribute("SameSite", "Lax");
         cookie.setPath("/");

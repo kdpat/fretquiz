@@ -30,8 +30,8 @@ public class Round {
     private Instant createdAt;
 
     public static Round create(Settings settings) {
-        var noteToGuess = settings.fretboard().randomNote();
-        var correctFretCoords = settings.fretboard().findFretCoords(noteToGuess);
+        Note noteToGuess = settings.fretboard().randomNote();
+        List<FretCoord> correctFretCoords = settings.fretboard().findFretCoords(noteToGuess);
 
         var round = new Round();
         round.noteToGuess = noteToGuess;

@@ -1,8 +1,10 @@
 package fq.fretquiz.auth;
 
+import fq.fretquiz.user.User;
 import fq.fretquiz.user.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -30,17 +32,17 @@ public class AuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        var uri = request.getRequestURI();
-        var isPageRequest = uri.equals("/") || uri.startsWith("/game");
+        String uri = request.getRequestURI();
+        boolean isPageRequest = uri.equals("/") || uri.startsWith("/game");
 
         if (isPageRequest) {
-            var cookies = request.getCookies();
-            var token = Auth.findUserIdToken(cookies).orElse(null);
+            Cookie[] cookies = request.getCookies();
+            String token = Auth.findUserIdToken(cookies).orElse(null);
 
             if (token == null) {
                 addNewUserCookie(response);
             } else {
-                var userId = Auth.decodeUserIdToken(token).orElse(null);
+                Long userId = Auth.decodeUserIdToken(token).orElse(null);
 
                 if (userId == null || !userService.userExists(userId)) {
                     addNewUserCookie(response);
@@ -54,9 +56,9 @@ public class AuthFilter extends OncePerRequestFilter {
     }
 
     private void addNewUserCookie(HttpServletResponse response) {
-        var user = userService.createUser();
+        User user = userService.createUser();
         log.info("user created: {}", user);
-        var cookie = Auth.createUserCookie(user);
+        Cookie cookie = Auth.createUserCookie(user);
         response.addCookie(cookie);
     }
 }
