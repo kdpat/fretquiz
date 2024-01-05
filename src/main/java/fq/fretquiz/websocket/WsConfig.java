@@ -20,24 +20,23 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
 import java.security.Principal;
 import java.util.Map;
-import java.util.Objects;
 
 @Configuration
 @EnableWebSocketMessageBroker
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+public class WsConfig implements WebSocketMessageBrokerConfigurer {
 
     private final UserService userService;
 
-    private static final Logger log = LoggerFactory.getLogger(WebSocketConfig.class);
+    private static final Logger log = LoggerFactory.getLogger(WsConfig.class);
 
-    public WebSocketConfig(UserService userService) {
+    public WsConfig(UserService userService) {
         this.userService = userService;
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/queue", "/topic");
         registry.setApplicationDestinationPrefixes("/app");
+        registry.enableSimpleBroker("/queue", "/topic");
     }
 
     @Override
@@ -84,12 +83,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                                               @NonNull WebSocketHandler handler,
                                               @NonNull Map<String, Object> attrs) {
                 var userToken = (String) attrs.get("userToken");
-                Objects.requireNonNull(userToken);
-
                 var userId = Auth.decodeUserIdToken(userToken).orElseThrow();
                 var user = userService.findUser(userId).orElseThrow();
-
-                return UserPrincipal.from(user);
+                return new WsPrincipal(user.id());
             }
         };
     }

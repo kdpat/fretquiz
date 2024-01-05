@@ -30,16 +30,23 @@ public class AuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        var cookies = request.getCookies();
-        var token = Auth.findUserIdToken(cookies).orElse(null);
+        var uri = request.getRequestURI();
+        var isPageRequest = uri.equals("/") || uri.startsWith("/game");
 
-        if (token == null) {
-            addNewUserCookie(response);
-        } else {
-            var userId = Auth.decodeUserIdToken(token).orElse(null);
+        if (isPageRequest) {
+            var cookies = request.getCookies();
+            var token = Auth.findUserIdToken(cookies).orElse(null);
 
-            if (userId == null || !userService.userExists(userId)) {
+            if (token == null) {
                 addNewUserCookie(response);
+            } else {
+                var userId = Auth.decodeUserIdToken(token).orElse(null);
+
+                if (userId == null || !userService.userExists(userId)) {
+                    addNewUserCookie(response);
+                } else {
+                    log.info("user found: {}", userId);
+                }
             }
         }
 
@@ -48,6 +55,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
     private void addNewUserCookie(HttpServletResponse response) {
         var user = userService.createUser();
+        log.info("user created: {}", user);
         var cookie = Auth.createUserCookie(user);
         response.addCookie(cookie);
     }

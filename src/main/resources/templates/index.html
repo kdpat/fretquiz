@@ -28,6 +28,10 @@
 
 <h2>FretQuiz</h2>
 
+<p>User:
+  <span th:text="${user.name}"></span>(<span th:text="${user.id}"></span>)
+</p>
+
 <form method="post" action="/game">
   <button class="create-game-button" type="submit">Create Game</button>
 </form>

@@ -28,8 +28,8 @@ function GameComponent(props) {
   // wrap note in a list, so we can pass it to the Staff component
   const notes = noteToGuess ? [noteToGuess] : [];
 
-  const player = game && playerId && findPlayer(game, playerId);
-  const canGuess = round && playerId && playerCanGuess(round, playerId);
+  const player = game && playerId && findPlayer(game.players, playerId);
+  const canGuess = round && playerId && playerCanGuess(round.guesses, playerId);
 
   const userIsHost = player?.userId === game?.hostId;
   const isStartStatus = game?.status === "INIT" || game?.status === "ROUND_OVER";
@@ -60,8 +60,8 @@ function GameComponent(props) {
 
           ${canStartRound
           && html`<${StartRoundButton} ws=${wsRef.current}
-                                     gameId=${props.gameId}
-                                     status=${game?.status}/>`}
+                                       gameId=${props.gameId}
+                                       status=${game?.status}/>`}
       </div>
 
       <div className="game-info">
@@ -80,12 +80,10 @@ function makeGameSocket(gameId, setters) {
 
 function onStompConnect(client, gameId, setters) {
   console.log("stomp client connected", client);
-
   const onMessage = resp => onGameMessage(resp, setters);
   client.subscribe(`/topic/game/${gameId}`, onMessage);
   client.subscribe(`/user/topic/game/${gameId}`, onMessage);
-
-  client.publish({destination: `/app/game/${gameId}`});
+  client.publish({destination: `/app/game/${gameId}/fetch`});
 }
 
 function onGameMessage(resp, {setGame, setPlayerId}) {
@@ -102,6 +100,11 @@ function onGameMessage(resp, {setGame, setPlayerId}) {
       break;
     case "GUESS_RESULT":
       setGame(message.game);
+      break;
+    case "GAME_NOT_FOUND":
+      console.error("game not found");
+      // redirect to home
+      // window.location.href = "/";
       break;
     // default:
     //   throw new Error(`unknown game message type: ${message.type}`);
@@ -133,14 +136,14 @@ function parseGameIdFromPath(pathname) {
   return parts[2];
 }
 
-function findPlayer(game, playerId) {
-  return game.players.find(player => player.id === playerId);
-}
-
-function playerCanGuess(round, playerId) {
-  return !round.guesses.some(guess => guess.payload.playerId === playerId);
+function findPlayer(players, playerId) {
+  return players.find(player => player.id === playerId);
 }
 
 function findPlayerGuess(guesses, playerId) {
   return guesses.find(guess => guess.payload.playerId === playerId);
+}
+
+function playerCanGuess(guesses, playerId) {
+  return !guesses.some(guess => guess.payload.playerId === playerId);
 }

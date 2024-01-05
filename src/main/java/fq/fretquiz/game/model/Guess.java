@@ -18,6 +18,11 @@ public class Guess {
     private boolean isCorrect;
     private Instant createdAt;
 
+    @Embeddable
+    public record Payload(Long playerId,
+                          FretCoord fretCoord) {
+    }
+
     public static Guess create(Payload payload, boolean isCorrect) {
         var guess = new Guess();
         guess.payload = payload;
@@ -59,10 +64,5 @@ public class Guess {
                 ", isCorrect=" + isCorrect +
                 ", createdAt=" + createdAt +
                 '}';
-    }
-
-    @Embeddable
-    public record Payload(Long playerId,
-                          FretCoord fretCoord) {
     }
 }

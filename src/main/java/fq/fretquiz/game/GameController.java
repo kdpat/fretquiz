@@ -1,13 +1,10 @@
 package fq.fretquiz.game;
 
 import fq.fretquiz.App;
-import fq.fretquiz.auth.Auth;
-import fq.fretquiz.game.model.GameUpdate;
 import fq.fretquiz.game.model.Guess;
 import fq.fretquiz.game.model.Player;
-import fq.fretquiz.user.User;
 import fq.fretquiz.user.UserService;
-import fq.fretquiz.websocket.UserPrincipal;
+import fq.fretquiz.websocket.WsPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +15,6 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import java.util.Optional;
 
 @Controller
 public class GameController {
@@ -49,10 +44,11 @@ public class GameController {
         return "redirect:/game/" + encodedId;
     }
 
-    @MessageMapping("/game/{encodedGameId}")
+    @MessageMapping("/game/{encodedGameId}/fetch")
     @SendToUser("/topic/game/{encodedGameId}")
     public GameMessage fetchGame(@DestinationVariable String encodedGameId,
-                                 UserPrincipal principal) {
+                                 WsPrincipal principal) {
+        log.info("user fetching game: {}", principal);
         var gameId = App.decodeId(encodedGameId);
         var game = gameService.findGame(gameId).orElse(null);
 
@@ -69,7 +65,7 @@ public class GameController {
 
     @MessageMapping("/game/{encodedGameId}/join")
     @SendTo("/topic/game/{encodedGameId}")
-    public GameMessage joinGame(String encodedGameId, UserPrincipal principal) {
+    public GameMessage joinGame(String encodedGameId, WsPrincipal principal) {
         var gameId = App.decodeId(encodedGameId);
         var game = gameService.findGame(gameId).orElseThrow();
         var user = userService.findUser(principal.id()).orElseThrow();
@@ -80,9 +76,9 @@ public class GameController {
     @MessageMapping("/game/{encodedGameId}/start")
     @SendTo("/topic/game/{encodedGameId}")
     public GameMessage startRound(@DestinationVariable String encodedGameId,
-                                  UserPrincipal principal) {
+                                  WsPrincipal principal) {
         var gameId = App.decodeId(encodedGameId);
-        var user = principal.toUser();
+        var user = userService.findUser(principal.id()).orElseThrow();
 
         return gameService.findGame(gameId)
                 .map(game -> gameService.startNewRound(game, user))
