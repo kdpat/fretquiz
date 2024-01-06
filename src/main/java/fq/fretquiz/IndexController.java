@@ -18,7 +18,6 @@ public class IndexController {
     public String showIndex(HttpServletRequest request, Model model) {
         User user = (User) request.getAttribute("user");
         model.addAttribute("user", user);
-        log.info("index user: {}", user);
         return "index";
     }
 }

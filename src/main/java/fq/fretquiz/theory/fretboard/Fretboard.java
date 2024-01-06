@@ -35,7 +35,6 @@ public record Fretboard(List<Note> openStrings,
                 notes.put(fretCoord, transposed);
             }
         }
-
         return notes;
     }
 
@@ -44,7 +43,7 @@ public record Fretboard(List<Note> openStrings,
      */
     public Optional<Note> findNote(FretCoord coord) {
         Note note = fretCoordNotes.get(coord);
-        return Optional.ofNullable(note);
+        return Optional.of(note);
     }
 
     /**
@@ -72,7 +71,6 @@ public record Fretboard(List<Note> openStrings,
     public Note randomNote() {
         Note low = openStrings.getLast();
         Note high = openStrings.getFirst().transpose(fretCount());
-
         return Note.randomBetween(low, high);
     }
 
@@ -80,7 +78,6 @@ public record Fretboard(List<Note> openStrings,
         if (string < 1 || string > stringCount() + 1) {
             throw new IllegalArgumentException();
         }
-
         var notes = new ArrayList<Note>();
 
         for (int fret = fretSpan.startFret(); fret <= fretSpan.endFret(); fret++) {
@@ -88,7 +85,6 @@ public record Fretboard(List<Note> openStrings,
             Note note = findNote(fretCoord).orElseThrow();
             notes.add(note);
         }
-
         return notes;
     }
 }

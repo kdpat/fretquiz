@@ -47,22 +47,21 @@ public class Auth {
         }
     }
 
+    public static Optional<String> findUserIdToken(Cookie[] cookies) {
+        if (cookies == null) {
+            return Optional.empty();
+        }
+        return Arrays.stream(cookies)
+                .filter(c -> c.getName().equals(USER_COOKIE))
+                .findFirst()
+                .map(Cookie::getValue);
+    }
+
     public static Cookie createUserCookie(User user) {
         String token = encodeUserIdToken(user.id());
         var cookie = new Cookie(USER_COOKIE, token);
         cookie.setAttribute("SameSite", "Lax");
         cookie.setPath("/");
         return cookie;
-    }
-
-    public static Optional<String> findUserIdToken(Cookie[] cookies) {
-        if (cookies == null) {
-            return Optional.empty();
-        }
-
-        return Arrays.stream(cookies)
-                .filter(c -> c.getName().equals(USER_COOKIE))
-                .findFirst()
-                .map(Cookie::getValue);
     }
 }

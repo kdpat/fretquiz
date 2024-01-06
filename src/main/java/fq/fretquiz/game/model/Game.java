@@ -36,7 +36,6 @@ public class Game {
 
     public static Game create(User host) {
         var game = new Game();
-
         game.host = host;
         game.settings = Settings.createDefault();
         game.status = Status.INIT;
@@ -82,7 +81,7 @@ public class Game {
         if (rounds.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.ofNullable(rounds.getLast());
+        return Optional.of(rounds.getLast());
     }
 
     public Optional<Player> findPlayer(Long playerId) {

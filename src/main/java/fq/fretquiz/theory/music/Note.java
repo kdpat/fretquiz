@@ -26,7 +26,6 @@ public record Note(WhiteKey whiteKey,
      */
     public static Note from(String name) {
         Matcher matcher = regexPattern.matcher(name);
-
         if (!matcher.matches()) {
             throw new IllegalArgumentException();
         }
@@ -48,7 +47,6 @@ public record Note(WhiteKey whiteKey,
         WhiteKey whiteKey = randomElem(List.of(WhiteKey.values()));
         Accidental accidental = randomElem(List.of(Accidental.values()));
         Octave octave = randomElem(List.of(Octave.values()));
-
         return new Note(whiteKey, accidental, octave);
     }
 
@@ -127,14 +125,12 @@ public record Note(WhiteKey whiteKey,
         if (halfSteps < 0) {
             throw new IllegalArgumentException("halfSteps must be a positive number");
         }
-
         var note = new Note(whiteKey, accidental, octave);
 
         while (halfSteps > 0) {
             note = note.next();
             halfSteps--;
         }
-
         return note;
     }
 

@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 @SpringBootApplication
@@ -20,7 +21,7 @@ public class App {
 	}
 
 	public static <T> T randomElem(List<T> list) {
-        var random = ThreadLocalRandom.current();
+        Random random = ThreadLocalRandom.current();
         int index = random.nextInt(list.size());
 		return list.get(index);
 	}
@@ -35,18 +36,17 @@ public class App {
 			throw new IllegalArgumentException("id must be a positive number");
 		}
 
-		var stringBuilder = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
 
 		while (id > 0) {
 			int index = (int) (id % ENCODE_CHARS_LEN);
 			char charAt = ENCODE_CHARS.charAt(index);
-			stringBuilder.append(charAt);
+			builder.append(charAt);
 			id /= ENCODE_CHARS_LEN;
 		}
 
-		return stringBuilder.reverse().toString();
+		return builder.reverse().toString();
 	}
-
 
 	public static Long decodeId(String encodedId) {
 		long id = 0;

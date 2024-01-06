@@ -58,8 +58,8 @@ public class WsConfig implements WebSocketMessageBrokerConfigurer {
                                            @NonNull ServerHttpResponse response,
                                            @NonNull WebSocketHandler handler,
                                            @NonNull Map<String, Object> attrs) {
-                if (request instanceof ServletServerHttpRequest servletReq) {
-                    Cookie[] cookies = servletReq.getServletRequest().getCookies();
+                if (request instanceof ServletServerHttpRequest req) {
+                    Cookie[] cookies = req.getServletRequest().getCookies();
                     String userToken = Auth.findUserIdToken(cookies).orElseThrow();
                     attrs.put("userToken", userToken);
                     return true;

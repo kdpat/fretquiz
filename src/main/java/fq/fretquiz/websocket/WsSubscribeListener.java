@@ -30,41 +30,36 @@ public class WsSubscribeListener implements ApplicationListener<SessionSubscribe
         this.gameService = gameService;
     }
 
+    public static final String USER_GAME_TOPIC = "^/user/topic/game/.+";
+
     @Override
     public void onApplicationEvent(@NonNull SessionSubscribeEvent event) {
         MessageHeaders headers = event.getMessage().getHeaders();
-        String destination = (String) Objects.requireNonNull(headers.get("simpDestination"));
-        String[] parts = destination.split("/");
+        String simpDest = (String) headers.get("simpDestination");
+        Objects.requireNonNull(simpDest);
 
-        // handle subs to /user/topic/game/{gameId}
-        if (destination.startsWith("/user/topic/game") && parts.length == 5) {
+        if (simpDest.matches(USER_GAME_TOPIC)) {
+            String[] parts = simpDest.split("/");
             String encodedGameId = Objects.requireNonNull(parts[4]);
             Long gameId = App.decodeId(encodedGameId);
 
             Principal principal = Objects.requireNonNull(event.getUser());
             log.info("{} subbed to game {}", principal, gameId);
 
-            String responseDest = "/topic/game/" + encodedGameId;
-
-            gameService.findGame(gameId)
-                    .ifPresentOrElse(game -> {
+            GameMessage message = gameService.findGame(gameId)
+                    .<GameMessage>map(game -> {
                         Long userId = Long.valueOf(principal.getName());
 
                         Long playerId = game.findPlayerByUserId(userId)
                                 .map(Player::id)
                                 .orElse(null);
 
-                        messagingTemplate.convertAndSendToUser(
-                                principal.getName(),
-                                responseDest,
-                                new GameMessage.FoundGame(game, playerId)
-                        );
-                    }, () -> {
-                        messagingTemplate.convertAndSendToUser(
-                                principal.getName(),
-                                responseDest,
-                                GameMessage.GAME_NOT_FOUND);
-                    });
+                        return new GameMessage.FoundGame(game, playerId);
+                    })
+                    .orElse(GameMessage.GAME_NOT_FOUND);
+
+            String respDest = "/topic/game/" + encodedGameId;
+            messagingTemplate.convertAndSendToUser(principal.getName(), respDest, message);
         }
     }
 }

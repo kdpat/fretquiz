@@ -1,7 +1,6 @@
 package fq.fretquiz.game;
 
 import fq.fretquiz.game.model.*;
-import fq.fretquiz.theory.fretboard.Fretboard;
 import fq.fretquiz.theory.music.Note;
 import fq.fretquiz.user.User;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ public class GameService {
 
     @Transactional
     public Game createWithHost(User host) {
-        var game = Game.create(host);
+        Game game = Game.create(host);
         return gameRepo.save(game);
     }
 
@@ -35,7 +34,7 @@ public class GameService {
             return new GameUpdate.None("User is already playing.");
         }
 
-        var player = Player.from(user);
+        Player player = Player.from(user);
         game.addPlayer(player);
         game = gameRepo.save(game);
 
@@ -51,7 +50,7 @@ public class GameService {
             return new GameUpdate.None("User must be host to start round.");
         }
 
-        var round = Round.create(game.settings());
+        Round round = Round.create(game.settings());
         game.addRound(round);
         game.setStatus(Status.PLAYING);
 
@@ -62,23 +61,25 @@ public class GameService {
     @Transactional
     public GameUpdate handleGuess(Game game, Guess.Payload payload) {
         Round round = game.currentRound().orElseThrow();
-        Player player = game.findPlayer(payload.playerId()).orElseThrow();
 
-        if (round.playerHasGuessed(player.id())) {
+        if (round.playerHasGuessed(payload.playerId())) {
             return new GameUpdate.None("Player already guessed.");
         }
 
-        Fretboard fretboard = game.settings().fretboard();
-        Note guessedNote = fretboard.findNote(payload.fretCoord()).orElseThrow();
-        boolean isCorrect = round.noteToGuess().isEnharmonicWith(guessedNote);
+        Player player = game.findPlayer(payload.playerId()).orElseThrow();
+        Note guessedNote = game.settings()
+                .fretboard()
+                .findNote(payload.fretCoord())
+                .orElseThrow();
 
+        boolean isCorrect = round.noteToGuess().isEnharmonicWith(guessedNote);
         if (isCorrect) {
             player.incrementScore();
         } else {
             player.decrementScore();
         }
 
-        var guess = Guess.create(payload, isCorrect);
+        Guess guess = Guess.create(payload, isCorrect);
         round.addGuess(guess);
 
         boolean roundIsOver = round.guessCount() == game.playerCount();

@@ -18,6 +18,11 @@ public class Guess {
     private boolean isCorrect;
     private Instant createdAt;
 
+    /**
+     * Represents the data sent from the client when a user guesses (clicks the fretboard).
+     * @param playerId the player who guessed
+     * @param fretCoord the string and fret that they clicked
+     */
     @Embeddable
     public record Payload(Long playerId,
                           FretCoord fretCoord) {

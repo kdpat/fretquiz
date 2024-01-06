@@ -40,14 +40,14 @@ public class GameController {
         User user = (User) request.getAttribute("user");
         Game game = gameService.createWithHost(user);
         log.info("game created: {}", game);
-
         String encodedId = App.encodeId(game.id());
         return "redirect:/game/" + encodedId;
     }
 
     @MessageMapping("/game/{encodedGameId}/join")
     @SendTo("/topic/game/{encodedGameId}")
-    public GameMessage joinGame(@DestinationVariable String encodedGameId, WsPrincipal principal) {
+    public GameMessage joinGame(@DestinationVariable String encodedGameId,
+                                WsPrincipal principal) {
         Long gameId = App.decodeId(encodedGameId);
         Game game = gameService.findGame(gameId).orElseThrow();
         User user = userService.findUser(principal.id()).orElseThrow();

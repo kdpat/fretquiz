@@ -38,7 +38,6 @@ public class Round {
         round.correctFretCoords = new ArrayList<>(correctFretCoords);
         round.guesses = new ArrayList<>();
         round.createdAt = nowMillis();
-
         return round;
     }
 
