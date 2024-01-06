@@ -26,15 +26,6 @@ public class Auth {
             .withIssuer(ISSUER)
             .build();
 
-    public static Optional<String> findUserIdToken(Cookie[] cookies) {
-        if (cookies == null) return Optional.empty();
-
-        return Arrays.stream(cookies)
-                .filter(c -> c.getName().equals(USER_COOKIE))
-                .findFirst()
-                .map(Cookie::getValue);
-    }
-
     public static String encodeUserIdToken(Long userId) {
         Instant now = nowMillis();
 
@@ -62,5 +53,16 @@ public class Auth {
         cookie.setAttribute("SameSite", "Lax");
         cookie.setPath("/");
         return cookie;
+    }
+
+    public static Optional<String> findUserIdToken(Cookie[] cookies) {
+        if (cookies == null) {
+            return Optional.empty();
+        }
+
+        return Arrays.stream(cookies)
+                .filter(c -> c.getName().equals(USER_COOKIE))
+                .findFirst()
+                .map(Cookie::getValue);
     }
 }

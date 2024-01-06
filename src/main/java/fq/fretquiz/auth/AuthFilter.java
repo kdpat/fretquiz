@@ -7,8 +7,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -21,8 +19,6 @@ import java.io.IOException;
 public class AuthFilter extends OncePerRequestFilter {
 
     private final UserService userService;
-
-    private static final Logger log = LoggerFactory.getLogger(AuthFilter.class);
 
     public AuthFilter(UserService userService) {
         this.userService = userService;
@@ -37,26 +33,24 @@ public class AuthFilter extends OncePerRequestFilter {
 
         if (isPageRequest) {
             Cookie[] cookies = request.getCookies();
-            String token = Auth.findUserIdToken(cookies).orElse(null);
 
-            if (token == null) {
-                addNewUserCookie(response);
-            } else {
-                Long userId = Auth.decodeUserIdToken(token).orElse(null);
-
-                if (userId == null || !userService.userExists(userId)) {
-                    addNewUserCookie(response);
-                }
-            }
+            Auth.findUserIdToken(cookies)
+                    .flatMap(Auth::decodeUserIdToken)
+                    .ifPresentOrElse(userId -> {
+                        userService.findUser(userId)
+                                .ifPresentOrElse(
+                                        user -> request.setAttribute("user", user),
+                                        () -> createUser(request, response));
+                    }, () -> createUser(request, response));
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private void addNewUserCookie(HttpServletResponse response) {
+    private void createUser(HttpServletRequest req, HttpServletResponse resp) {
         User user = userService.createUser();
-        log.info("user created: {}", user);
+        req.setAttribute("user", user);
         Cookie cookie = Auth.createUserCookie(user);
-        response.addCookie(cookie);
+        resp.addCookie(cookie);
     }
 }

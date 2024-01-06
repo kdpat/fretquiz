@@ -1,7 +1,7 @@
 package fq.fretquiz.user;
 
-import fq.fretquiz.auth.Auth;
-import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +12,8 @@ public class UserService {
 
     private final UserRepo userRepo;
 
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
     public UserService(UserRepo userRepo) {
         this.userRepo = userRepo;
     }
@@ -20,25 +22,18 @@ public class UserService {
         return userRepo.findById(userId);
     }
 
-    public boolean userExists(Long userId) {
-        return userRepo.existsById(userId);
-    }
-
     @Transactional
     public User createUser() {
         var user = User.create();
-        return userRepo.save(user);
+        user = userRepo.save(user);
+        log.info("user created: {}", user);
+        return user;
     }
 
     @Transactional
     public User updateName(User user, String newName) {
         user.setName(newName);
+        log.info("user updated: {}", user);
         return userRepo.save(user);
-    }
-
-    public Optional<User> fetchUserFromRequest(HttpServletRequest request) {
-        return Auth.findUserIdToken(request.getCookies())
-                .flatMap(Auth::decodeUserIdToken)
-                .flatMap(this::findUser);
     }
 }

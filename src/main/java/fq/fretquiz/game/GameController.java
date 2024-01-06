@@ -37,7 +37,7 @@ public class GameController {
 
     @PostMapping("/game")
     public String handleCreateGame(HttpServletRequest request) {
-        User user = userService.fetchUserFromRequest(request).orElseThrow();
+        User user = (User) request.getAttribute("user");
         Game game = gameService.createWithHost(user);
         log.info("game created: {}", game);
 
