@@ -42,11 +42,9 @@ public class Game {
         game.createdAt = nowMillis();
         game.rounds = new ArrayList<>();
 
-        var players = new ArrayList<Player>();
-        var hostPlayer = Player.from(host);
-
-        players.add(hostPlayer);
-        game.players = players;
+        Player hostPlayer = Player.from(host);
+        game.players = new ArrayList<>();
+        game.players.add(hostPlayer);
 
         return game;
     }
