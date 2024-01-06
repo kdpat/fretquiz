@@ -64,4 +64,9 @@ public class Auth {
         cookie.setPath("/");
         return cookie;
     }
+
+    public static Optional<Long> decodeUserCookie(Cookie[] cookies) {
+        return findUserIdToken(cookies)
+                .flatMap(Auth::decodeUserIdToken);
+    }
 }

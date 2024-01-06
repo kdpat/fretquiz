@@ -21,7 +21,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
     /**
      * The pages that expect a user attr to be set.
-     * We set this so that we can ignore requests to js/css/image/other files.
+     * This filter will ignore requests to any other uris.
      */
     public static final Set<String> USER_ATTR_URIS = Set.of("/", "/game");
 
@@ -32,26 +32,27 @@ public class AuthFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest req,
-                                    @NonNull HttpServletResponse resp,
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String uri = req.getRequestURI();
+        String uri = request.getRequestURI();
 
         if (USER_ATTR_URIS.contains(uri)) {
-            Cookie[] cookies = req.getCookies();
+            Cookie[] cookies = request.getCookies();
 
-            var user = Auth.findUserIdToken(cookies)
-                    .flatMap(Auth::decodeUserIdToken)
+            var user = Auth.decodeUserCookie(cookies)
                     .flatMap(userService::findUser)
-                    .orElseGet(() -> {
-                        User u = userService.createUser();
-                        Cookie cookie = Auth.createUserCookie(u);
-                        resp.addCookie(cookie);
-                        return u;
-                    });
+                    .orElseGet(() -> createUserAndCookie(response));
 
-            req.setAttribute("user", user);
+            request.setAttribute("user", user);
         }
-        filterChain.doFilter(req, resp);
+        filterChain.doFilter(request, response);
+    }
+
+    private User createUserAndCookie(HttpServletResponse response) {
+        User user = userService.createUser();
+        Cookie cookie = Auth.createUserCookie(user);
+        response.addCookie(cookie);
+        return user;
     }
 }

@@ -4,10 +4,9 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public record FretSpan(int startFret,
-                       int endFret,
-                       int size) {
+                       int endFret) {
 
-    public FretSpan(int startFret, int endFret) {
-        this(startFret, endFret, endFret-startFret);
+    public int size() {
+        return endFret - startFret;
     }
 }
