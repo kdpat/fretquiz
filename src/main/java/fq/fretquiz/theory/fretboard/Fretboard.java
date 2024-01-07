@@ -10,12 +10,12 @@ public record Fretboard(List<Note> openStrings,
 
     public static final List<Note> STANDARD_GUITAR_STRINGS =
             List.of(
-                    Note.from("E/5"),
-                    Note.from("B/4"),
-                    Note.from("G/4"),
-                    Note.from("D/4"),
-                    Note.from("A/3"),
-                    Note.from("E/3")
+                    Note.fromString("E/5"),
+                    Note.fromString("B/4"),
+                    Note.fromString("G/4"),
+                    Note.fromString("D/4"),
+                    Note.fromString("A/3"),
+                    Note.fromString("E/3")
             );
 
     public static Fretboard create(List<Note> openStrings, FretSpan fretSpan) {
@@ -24,7 +24,7 @@ public record Fretboard(List<Note> openStrings,
     }
 
     public static Map<FretCoord, Note> calculateNotes(List<Note> openStrings, FretSpan fretSpan) {
-        var notes = new HashMap<FretCoord, Note>();
+        Map<FretCoord, Note> notes = new HashMap<>();
         int stringCount = openStrings.size();
 
         for (int string = 0; string < stringCount; string++) {
@@ -74,11 +74,18 @@ public record Fretboard(List<Note> openStrings,
         return Note.randomBetween(low, high);
     }
 
+//    public Note randomNote() {
+//        Random random = ThreadLocalRandom.current();
+//        int string = random.nextInt(stringCount());
+//        List<Note> notes = notesOnString(string);
+//        return App.randomElem(notes);
+//    }
+
     public List<Note> notesOnString(int string) {
         if (string < 1 || string > stringCount() + 1) {
             throw new IllegalArgumentException();
         }
-        var notes = new ArrayList<Note>();
+        List<Note> notes = new ArrayList<>();
 
         for (int fret = fretSpan.startFret(); fret <= fretSpan.endFret(); fret++) {
             var fretCoord = new FretCoord(string, fret);

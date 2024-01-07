@@ -1,8 +1,12 @@
 package fq.fretquiz.theory.music;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.Embeddable;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,6 +14,7 @@ import java.util.regex.Pattern;
 import static fq.fretquiz.App.randomElem;
 
 @Embeddable
+@JsonSerialize(using = Note.Serializer.class)
 public record Note(WhiteKey whiteKey,
                    Accidental accidental,
                    Octave octave) {
@@ -24,10 +29,10 @@ public record Note(WhiteKey whiteKey,
      * @param name a string consisting of a capital letter A-G, an optional accidental ('b' or '#'), and an octave number
      * @return a Note
      */
-    public static Note from(String name) {
+    public static Note fromString(String name) {
         Matcher matcher = regexPattern.matcher(name);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Note name must be in the form Cbb/4");
         }
 
         // for the note 'E##3': matcher.group(1) == 'E', matcher.group(2) == '##', matcher.group(3) == '3'
@@ -138,9 +143,11 @@ public record Note(WhiteKey whiteKey,
         return whiteKey.value + accidental.value + "/" + octave.value;
     }
 
-    @Override
-    @JsonValue
-    public String toString() {
-        return name();
+    public static class Serializer extends JsonSerializer<Note> {
+
+        @Override
+        public void serialize(Note note, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            gen.writeString(note.name());
+        }
     }
 }

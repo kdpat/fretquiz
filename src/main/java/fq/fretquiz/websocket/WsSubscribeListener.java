@@ -1,6 +1,6 @@
 package fq.fretquiz.websocket;
 
-import fq.fretquiz.App;
+import fq.fretquiz.IdCodec;
 import fq.fretquiz.game.GameMessage;
 import fq.fretquiz.game.GameService;
 import fq.fretquiz.game.model.Player;
@@ -13,7 +13,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
-import java.security.Principal;
 import java.util.Objects;
 
 @Component
@@ -41,16 +40,15 @@ public class WsSubscribeListener implements ApplicationListener<SessionSubscribe
         if (simpDest.matches(USER_GAME_TOPIC)) {
             String[] parts = simpDest.split("/");
             String encodedGameId = Objects.requireNonNull(parts[4]);
-            Long gameId = App.decodeId(encodedGameId);
+            Long gameId = IdCodec.decodeId(encodedGameId);
 
-            Principal principal = Objects.requireNonNull(event.getUser());
+            WsPrincipal principal = (WsPrincipal) event.getUser();
+            Objects.requireNonNull(principal);
             log.info("{} subbed to game {}", principal, gameId);
 
             GameMessage message = gameService.findGame(gameId)
                     .<GameMessage>map(game -> {
-                        Long userId = Long.valueOf(principal.getName());
-
-                        Long playerId = game.findPlayerByUserId(userId)
+                        Long playerId = game.findPlayerByUserId(principal.id())
                                 .map(Player::id)
                                 .orElse(null);
 

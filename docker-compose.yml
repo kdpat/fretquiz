@@ -4,7 +4,7 @@ services:
   app:
     build: .
     ports:
-      - "8081:8080"
+      - "8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/fretquiz
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -19,7 +19,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5433:5432"  # Map port 5433 on the host to 5432 in the container
+      - "5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

@@ -37,6 +37,13 @@ public enum Octave {
         return VALUES[(this.ordinal() + 1) % VALUES.length];
     }
 
+    public Octave previous() {
+        if (this == ONE) {
+            throw new IllegalStateException("No octave below ONE");
+        }
+        return VALUES[(this.ordinal() - 1) % VALUES.length];
+    }
+
     @Override
     public String toString() {
         return Integer.toString(value);

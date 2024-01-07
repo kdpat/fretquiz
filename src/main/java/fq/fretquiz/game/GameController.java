@@ -1,6 +1,6 @@
 package fq.fretquiz.game;
 
-import fq.fretquiz.App;
+import fq.fretquiz.IdCodec;
 import fq.fretquiz.game.model.Game;
 import fq.fretquiz.game.model.GameUpdate;
 import fq.fretquiz.game.model.Guess;
@@ -38,9 +38,9 @@ public class GameController {
     @PostMapping("/game")
     public String handleCreateGame(HttpServletRequest request) {
         User user = (User) request.getAttribute("user");
-        Game game = gameService.createWithHost(user);
+        Game game = gameService.createGame(user);
         log.info("game created: {}", game);
-        String encodedId = App.encodeId(game.id());
+        String encodedId = IdCodec.encodeId(game.id());
         return "redirect:/game/" + encodedId;
     }
 
@@ -48,7 +48,7 @@ public class GameController {
     @SendTo("/topic/game/{encodedGameId}")
     public GameMessage joinGame(@DestinationVariable String encodedGameId,
                                 WsPrincipal principal) {
-        Long gameId = App.decodeId(encodedGameId);
+        Long gameId = IdCodec.decodeId(encodedGameId);
         Game game = gameService.findGame(gameId).orElseThrow();
         User user = userService.findUser(principal.id()).orElseThrow();
         GameUpdate update = gameService.addPlayer(game, user);
@@ -59,7 +59,7 @@ public class GameController {
     @SendTo("/topic/game/{encodedGameId}")
     public GameMessage startRound(@DestinationVariable String encodedGameId,
                                   WsPrincipal principal) {
-        Long gameId = App.decodeId(encodedGameId);
+        Long gameId = IdCodec.decodeId(encodedGameId);
         User user = userService.findUser(principal.id()).orElseThrow();
 
         return gameService.findGame(gameId)
@@ -72,7 +72,7 @@ public class GameController {
     @SendTo("/topic/game/{encodedGameId}")
     public GameMessage handleGuess(@DestinationVariable String encodedGameId,
                                    Guess.Payload payload) {
-        Long gameId = App.decodeId(encodedGameId);
+        Long gameId = IdCodec.decodeId(encodedGameId);
 
         return gameService.findGame(gameId)
                 .map(game -> gameService.handleGuess(game, payload))

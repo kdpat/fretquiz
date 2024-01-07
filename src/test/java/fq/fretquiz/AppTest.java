@@ -21,10 +21,10 @@ class AppTest {
 	@Test
 	void encodeId() {
 		var id = 1234L;
-		var encodedId = App.encodeId(id);
+		var encodedId = IdCodec.encodeId(id);
 		log.info("encoded id: {}", encodedId);
 
-		var decodedId = App.decodeId(encodedId);
+		var decodedId = IdCodec.decodeId(encodedId);
 		log.info("decoded id: {}", decodedId);
 		assertEquals(id, decodedId);
 
@@ -32,8 +32,8 @@ class AppTest {
 
 		for (int i = 0; i < 100; i++) {
 			var n = random.nextLong(1000000);
-			var encoded = App.encodeId(n);
-			var decoded = App.decodeId(encoded);
+			var encoded = IdCodec.encodeId(n);
+			var decoded = IdCodec.decodeId(encoded);
 			log.info("n: {}, encoded: {}, decoded: {}", n, encoded, decoded);
 			assertEquals(n, decoded);
 		}

@@ -23,7 +23,7 @@ public class GameService {
     }
 
     @Transactional
-    public Game createWithHost(User host) {
+    public Game createGame(User host) {
         Game game = Game.create(host);
         return gameRepo.save(game);
     }
@@ -43,9 +43,7 @@ public class GameService {
 
     @Transactional
     public GameUpdate startNewRound(Game game, User user) {
-        Long hostId = game.host().id();
-        boolean userIsHost = Objects.equals(user.id(), hostId);
-
+        boolean userIsHost = Objects.equals(user.id(), game.host().id());
         if (!userIsHost) {
             return new GameUpdate.None("User must be host to start round.");
         }

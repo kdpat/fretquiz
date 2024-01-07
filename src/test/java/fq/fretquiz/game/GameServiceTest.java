@@ -26,7 +26,7 @@ class GameServiceTest {
         var user0 = userService.createUser();
         var user1 = userService.createUser();
 
-        var game = gameService.createWithHost(user0);
+        var game = gameService.createGame(user0);
         log.info("game created: {}", game);
 
         var playerJoinedUpdate = (GameUpdate.PlayerJoined) gameService.addPlayer(game, user1);

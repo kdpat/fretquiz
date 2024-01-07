@@ -33,6 +33,14 @@ public enum WhiteKey {
         return VALUES[(this.ordinal() + 1) % VALUES.length];
     }
 
+    public WhiteKey previous() {
+        if (this == C) {
+            return B;
+        }
+        return VALUES[(this.ordinal() - 1) % VALUES.length];
+    }
+
+
     @Override
     public String toString() {
         return value;
