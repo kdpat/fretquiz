@@ -12,17 +12,17 @@ import java.util.concurrent.ThreadLocalRandom;
 @SpringBootApplication
 public class App {
 
-	public static void main(String[] args) {
-		SpringApplication.run(App.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(App.class, args);
+    }
 
-	public static Instant nowMillis() {
-		return Instant.now().truncatedTo(ChronoUnit.MILLIS);
-	}
+    public static Instant nowMillis() {
+        return Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    }
 
-	public static <T> T randomElem(List<T> list) {
+    public static <T> T randomElem(List<T> list) {
         Random random = ThreadLocalRandom.current();
         int index = random.nextInt(list.size());
-		return list.get(index);
-	}
+        return list.get(index);
+    }
 }

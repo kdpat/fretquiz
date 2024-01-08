@@ -20,10 +20,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class GameController {
 
+    private static final Logger log = LoggerFactory.getLogger(GameController.class);
     private final UserService userService;
     private final GameService gameService;
-
-    private static final Logger log = LoggerFactory.getLogger(GameController.class);
 
     public GameController(UserService userService, GameService gameService) {
         this.userService = userService;

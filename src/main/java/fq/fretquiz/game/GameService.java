@@ -44,6 +44,7 @@ public class GameService {
     @Transactional
     public GameUpdate startNewRound(Game game, User user) {
         boolean userIsHost = Objects.equals(user.id(), game.host().id());
+
         if (!userIsHost) {
             return new GameUpdate.None("User must be host to start round.");
         }
@@ -51,8 +52,8 @@ public class GameService {
         Round round = Round.create(game.settings());
         game.addRound(round);
         game.setStatus(Status.PLAYING);
-
         game = gameRepo.save(game);
+
         return new GameUpdate.RoundStarted(game, round);
     }
 
@@ -65,12 +66,9 @@ public class GameService {
         }
 
         Player player = game.findPlayer(payload.playerId()).orElseThrow();
-        Note guessedNote = game.settings()
-                .fretboard()
-                .findNote(payload.fretCoord())
-                .orElseThrow();
-
+        Note guessedNote = game.settings().fretboard().findNote(payload.fretCoord()).orElseThrow();
         boolean isCorrect = round.noteToGuess().isEnharmonicWith(guessedNote);
+
         if (isCorrect) {
             player.incrementScore();
         } else {
@@ -79,13 +77,10 @@ public class GameService {
 
         Guess guess = Guess.create(payload, isCorrect);
         round.addGuess(guess);
-
         boolean roundIsOver = round.guessCount() == game.playerCount();
-        if (roundIsOver) {
-            Status status = game.roundsFull()
-                    ? Status.GAME_OVER
-                    : Status.ROUND_OVER;
 
+        if (roundIsOver) {
+            Status status = game.roundsFull() ? Status.GAME_OVER : Status.ROUND_OVER;
             game.setStatus(status);
         }
 

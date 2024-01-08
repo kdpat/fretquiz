@@ -1,14 +1,13 @@
 package fq.fretquiz.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import fq.fretquiz.App;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
-
-import static fq.fretquiz.App.nowMillis;
 
 @Entity
 @Table(name = "app_user")
@@ -25,7 +24,7 @@ public class User {
     public static User create() {
         var user = new User();
         user.name = DEFAULT_NAME;
-        user.createdAt = nowMillis();
+        user.createdAt = App.nowMillis();
         return user;
     }
 

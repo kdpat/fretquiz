@@ -35,18 +35,20 @@ public class AuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String uri = request.getRequestURI();
+        Cookie[] cookies = request.getCookies();
 
-        if (USER_ATTR_URIS.contains(uri)) {
-            Cookie[] cookies = request.getCookies();
+        var user = Auth.decodeUserCookie(cookies)
+                .flatMap(userService::findUser)
+                .orElseGet(() -> createUserAndCookie(response));
 
-            var user = Auth.decodeUserCookie(cookies)
-                    .flatMap(userService::findUser)
-                    .orElseGet(() -> createUserAndCookie(response));
-
-            request.setAttribute("user", user);
-        }
+        request.setAttribute("user", user);
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        return !USER_ATTR_URIS.contains(uri);
     }
 
     private User createUserAndCookie(HttpServletResponse response) {

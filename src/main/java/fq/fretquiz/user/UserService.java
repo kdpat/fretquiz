@@ -10,9 +10,8 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private final UserRepo userRepo;
-
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
+    private final UserRepo userRepo;
 
     public UserService(UserRepo userRepo) {
         this.userRepo = userRepo;
@@ -24,7 +23,7 @@ public class UserService {
 
     @Transactional
     public User createUser() {
-        var user = User.create();
+        User user = User.create();
         user = userRepo.save(user);
         log.info("user created: {}", user);
         return user;

@@ -128,14 +128,16 @@ public record Note(WhiteKey whiteKey,
      */
     public Note transpose(int halfSteps) {
         if (halfSteps < 0) {
-            throw new IllegalArgumentException("halfSteps must be a positive number");
+            throw new IllegalArgumentException("`halfSteps` can not be negative");
         }
+
         var note = new Note(whiteKey, accidental, octave);
 
         while (halfSteps > 0) {
             note = note.next();
             halfSteps--;
         }
+
         return note;
     }
 

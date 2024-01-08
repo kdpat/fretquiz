@@ -1,5 +1,11 @@
 package fq.fretquiz.theory.music;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+
+import java.io.IOException;
+
 public enum Accidental {
     DOUBLE_FLAT("bb"),
     FLAT("b"),
@@ -17,7 +23,7 @@ public enum Accidental {
 
     public static Accidental from(String name) {
         return switch (name) {
-            case "bb" ->DOUBLE_FLAT;
+            case "bb" -> DOUBLE_FLAT;
             case "b" -> FLAT;
             case "" -> NONE;
             case "#" -> SHARP;
@@ -40,8 +46,15 @@ public enum Accidental {
         return VALUES[(this.ordinal() + 1) % VALUES.length];
     }
 
-    @Override
-    public String toString() {
-        return value;
+    public Accidental previous() {
+        return VALUES[((this.ordinal() + VALUES.length) - 1) % VALUES.length];
+    }
+
+    public static class Serializer extends JsonSerializer<Accidental> {
+
+        @Override
+        public void serialize(Accidental acc, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            gen.writeString(acc.name());
+        }
     }
 }

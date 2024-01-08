@@ -1,6 +1,7 @@
 package fq.fretquiz.theory.music;
 
 public enum Octave {
+    ZERO(0),
     ONE(1),
     TWO(2),
     THREE(3),
@@ -8,11 +9,10 @@ public enum Octave {
     FIVE(5),
     SIX(6),
     SEVEN(7),
-    EIGHT(8),
-    NINE(9);
+    EIGHT(8);
 
-    public final int value;
     private static final Octave[] VALUES = values();
+    public final int value;
 
     Octave(int value) {
         this.value = value;
@@ -20,6 +20,7 @@ public enum Octave {
 
     public static Octave from(String num) {
         return switch (num) {
+            case "0" -> ZERO;
             case "1" -> ONE;
             case "2" -> TWO;
             case "3" -> THREE;
@@ -28,7 +29,6 @@ public enum Octave {
             case "6" -> SIX;
             case "7" -> SEVEN;
             case "8" -> EIGHT;
-            case "9" -> NINE;
             default -> throw new IllegalStateException("Unexpected value: " + num);
         };
     }
@@ -38,7 +38,7 @@ public enum Octave {
     }
 
     public Octave previous() {
-        if (this == ONE) {
+        if (this == ZERO) {
             throw new IllegalStateException("No octave below ONE");
         }
         return VALUES[(this.ordinal() - 1) % VALUES.length];

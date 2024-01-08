@@ -27,22 +27,19 @@ function GameComponent(props) {
 
   const round = game?.currentRound;
   const noteToGuess = round?.noteToGuess;
-
   // wrap note in a list, so we can pass it to the Staff component
   const notes = noteToGuess ? [noteToGuess] : [];
 
   const players = game?.players || [];
   const player = findPlayer(players, playerId);
-
-  const isStartStatus = game?.status === "INIT" || game?.status === "ROUND_OVER";
-  const canJoinGame = playerId == null && isStartStatus;
+  const guess = round && playerId && findPlayerGuess(round.guesses, playerId);
 
   const userIsHost = player && (player.user.id === game?.host.id);
+  const isStartStatus = game?.status === "INIT" || game?.status === "ROUND_OVER";
   const canStartRound = userIsHost && isStartStatus;
 
-  const guess = round && playerId && findPlayerGuess(round.guesses, playerId);
+  const canJoinGame = playerId == null && game?.status === "INIT";
   const playerCanGuess = round && playerId && guess == null;
-
   const dots = dotsToDraw(guess, round?.correctFretCoords);
 
   React.useEffect(() => {
@@ -66,17 +63,19 @@ function GameComponent(props) {
           />
 
           ${canStartRound
-          && html`<${StartRoundButton} ws=${wsRef.current}
-                                       gameId=${props.gameId}
-                                       status=${game?.status}/>`}
+          && html`
+            <${StartRoundButton} ws=${wsRef.current}
+                                 gameId=${props.gameId}
+                                 status=${game?.status}/>`}
       </div>
 
       <div className="game-info">
         <${Players} players=${players}/>
 
         ${canJoinGame
-        && html`<${JoinGameButton} ws=${wsRef.current}
-                                   gameId=${props.gameId}/>`}
+        && html`
+          <${JoinGameButton} ws=${wsRef.current}
+                             gameId=${props.gameId}/>`}
       </div>
     </div>
   `;

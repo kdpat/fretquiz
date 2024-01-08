@@ -2,11 +2,13 @@ package fq.fretquiz.game.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fq.fretquiz.theory.fretboard.FretCoord;
+import fq.fretquiz.theory.fretboard.Fretboard;
 import fq.fretquiz.theory.music.Note;
 import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static fq.fretquiz.App.nowMillis;
@@ -30,13 +32,14 @@ public class Round {
     private Instant createdAt;
 
     public static Round create(Settings settings) {
-        Note noteToGuess = settings.fretboard().randomNote();
-        List<FretCoord> correctFretCoords = settings.fretboard().findFretCoords(noteToGuess);
+        Fretboard fretboard = settings.fretboard();
+        Note noteToGuess = fretboard.randomNote();
+        List<FretCoord> correctFretCoords = fretboard.findFretCoords(noteToGuess);
 
         var round = new Round();
         round.noteToGuess = noteToGuess;
-        round.correctFretCoords = new ArrayList<>(correctFretCoords);
-        round.guesses = new ArrayList<>();
+        round.correctFretCoords = correctFretCoords;
+        round.guesses = Collections.emptyList();
         round.createdAt = nowMillis();
         return round;
     }

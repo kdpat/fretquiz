@@ -13,8 +13,6 @@ public class IdCodec {
     public static final String ENCODE_CHARS = "bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ25679";
     public static final int ENCODE_CHARS_LEN = ENCODE_CHARS.length();
 
-    // adapted from 3cats-in-a-coat comment
-    // https://news.ycombinator.com/item?id=38414914
     public static String encodeId(Long id) {
         if (id < 0) {
             throw new IllegalArgumentException("id must be a positive number");
@@ -22,6 +20,8 @@ public class IdCodec {
 
         StringBuilder builder = new StringBuilder();
 
+        // adapted from 3cats-in-a-coat comment
+        // https://news.ycombinator.com/item?id=38414914
         while (id > 0) {
             int index = (int) (id % ENCODE_CHARS_LEN);
             char charAt = ENCODE_CHARS.charAt(index);

@@ -1,15 +1,15 @@
 package fq.fretquiz.game.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import fq.fretquiz.App;
 import fq.fretquiz.user.User;
 import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import static fq.fretquiz.App.nowMillis;
 
 @Entity
 public class Game {
@@ -39,13 +39,9 @@ public class Game {
         game.host = host;
         game.settings = Settings.createDefault();
         game.status = Status.INIT;
-        game.createdAt = nowMillis();
-        game.rounds = new ArrayList<>();
-
-        Player hostPlayer = Player.from(host);
-        game.players = new ArrayList<>();
-        game.players.add(hostPlayer);
-
+        game.createdAt = App.nowMillis();
+        game.rounds = Collections.emptyList();
+        game.players = List.of(Player.from(host));
         return game;
     }
 

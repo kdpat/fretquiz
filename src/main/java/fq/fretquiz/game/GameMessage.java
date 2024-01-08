@@ -5,6 +5,17 @@ import fq.fretquiz.game.model.*;
 
 public sealed interface GameMessage {
 
+    GameNotFound GAME_NOT_FOUND = new GameNotFound();
+
+    static GameMessage from(GameUpdate gameUpdate) {
+        return switch (gameUpdate) {
+            case GameUpdate.None(var reason) -> new NoUpdate(reason);
+            case GameUpdate.PlayerJoined(var game, var player) -> new PlayerJoined(game, player);
+            case GameUpdate.RoundStarted(var game, var round) -> new RoundStarted(game, round);
+            case GameUpdate.GuessHandled(var game, var guess) -> new GuessHandled(game, guess);
+        };
+    }
+
     @JsonProperty
     Type type();
 
@@ -15,17 +26,6 @@ public sealed interface GameMessage {
         NO_UPDATE,
         ROUND_STARTED,
         GUESS_RESULT
-    }
-
-    GameNotFound GAME_NOT_FOUND = new GameNotFound();
-
-    static GameMessage from(GameUpdate gameUpdate) {
-        return switch (gameUpdate) {
-            case GameUpdate.None(var reason) -> new NoUpdate(reason);
-            case GameUpdate.PlayerJoined(var game, var player) -> new PlayerJoined(game, player);
-            case GameUpdate.RoundStarted(var game, var round) -> new RoundStarted(game, round);
-            case GameUpdate.GuessHandled(var game, var guess) -> new GuessHandled(game, guess);
-        };
     }
 
     record GameNotFound() implements GameMessage {

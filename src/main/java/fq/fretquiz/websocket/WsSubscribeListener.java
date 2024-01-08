@@ -18,18 +18,16 @@ import java.util.Objects;
 @Component
 public class WsSubscribeListener implements ApplicationListener<SessionSubscribeEvent> {
 
+    public static final String USER_GAME_TOPIC = "^/user/topic/game/.+";
+    private static final Logger log = LoggerFactory.getLogger(WsSubscribeListener.class);
     private final SimpMessagingTemplate messagingTemplate;
     private final GameService gameService;
-
-    private static final Logger log = LoggerFactory.getLogger(WsSubscribeListener.class);
 
     public WsSubscribeListener(SimpMessagingTemplate messagingTemplate,
                                GameService gameService) {
         this.messagingTemplate = messagingTemplate;
         this.gameService = gameService;
     }
-
-    public static final String USER_GAME_TOPIC = "^/user/topic/game/.+";
 
     @Override
     public void onApplicationEvent(@NonNull SessionSubscribeEvent event) {

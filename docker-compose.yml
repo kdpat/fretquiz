@@ -3,8 +3,8 @@ version: '3.8'
 services:
   app:
     build: .
-    ports:
-      - "8080"
+#    ports:
+#      - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/fretquiz
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -13,7 +13,7 @@ services:
       - db
 
   db:
-    image: postgres:latest
+    image: postgres:15.5
     environment:
       POSTGRES_DB: fretquiz
       POSTGRES_USER: postgres

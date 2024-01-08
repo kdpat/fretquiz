@@ -1,5 +1,11 @@
 package fq.fretquiz.theory.music;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+
+import java.io.IOException;
+
 public enum WhiteKey {
     C("C"),
     D("D"),
@@ -34,15 +40,14 @@ public enum WhiteKey {
     }
 
     public WhiteKey previous() {
-        if (this == C) {
-            return B;
-        }
-        return VALUES[(this.ordinal() - 1) % VALUES.length];
+        return VALUES[((this.ordinal() + VALUES.length) - 1) % VALUES.length];
     }
 
+    public static class Serializer extends JsonSerializer<WhiteKey> {
 
-    @Override
-    public String toString() {
-        return value;
+        @Override
+        public void serialize(WhiteKey whiteKey, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            gen.writeString(whiteKey.value);
+        }
     }
 }

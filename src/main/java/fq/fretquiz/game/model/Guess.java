@@ -18,16 +18,6 @@ public class Guess {
     private boolean isCorrect;
     private Instant createdAt;
 
-    /**
-     * Represents the data sent from the client when a user guesses (clicks the fretboard).
-     * @param playerId the player who guessed
-     * @param fretCoord the string and fret that they clicked
-     */
-    @Embeddable
-    public record Payload(Long playerId,
-                          FretCoord fretCoord) {
-    }
-
     public static Guess create(Payload payload, boolean isCorrect) {
         var guess = new Guess();
         guess.payload = payload;
@@ -69,5 +59,16 @@ public class Guess {
                 ", isCorrect=" + isCorrect +
                 ", createdAt=" + createdAt +
                 '}';
+    }
+
+    /**
+     * Represents the data sent from the client when a user guesses (clicks the fretboard).
+     *
+     * @param playerId  the player who guessed
+     * @param fretCoord the string and fret that they clicked
+     */
+    @Embeddable
+    public record Payload(Long playerId,
+                          FretCoord fretCoord) {
     }
 }

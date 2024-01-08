@@ -27,9 +27,8 @@ import java.util.Map;
 @EnableWebSocketMessageBroker
 public class WsConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final UserService userService;
-
     private static final Logger log = LoggerFactory.getLogger(WsConfig.class);
+    private final UserService userService;
 
     public WsConfig(UserService userService) {
         this.userService = userService;
