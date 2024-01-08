@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+    echo "No arguments provided. Please provide an argument."
+    exit 1
+fi
+
+execute_command() {
+    case $1 in
+        run)
+            ./mvnw spring-boot:run
+            ;;
+        clean)
+            ./mvnw clean
+            ;;
+        install)
+            ./mvnw install
+            ;;
+        compile)
+            ./mvnw native:compile -Pnative
+            ;;
+        *)
+            echo "Invalid argument. Please use 'run', 'clean', 'install', or 'compile'."
+            exit 1
+            ;;
+    esac
+}
+
+execute_command "$1"
