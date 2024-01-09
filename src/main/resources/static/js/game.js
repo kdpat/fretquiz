@@ -27,6 +27,7 @@ function GameComponent(props) {
 
   const round = game?.currentRound;
   const noteToGuess = round?.noteToGuess;
+
   // wrap note in a list, so we can pass it to the Staff component
   const notes = noteToGuess ? [noteToGuess] : [];
 

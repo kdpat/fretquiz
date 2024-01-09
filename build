@@ -19,8 +19,14 @@ execute_command() {
         compile)
             ./mvnw native:compile -Pnative
             ;;
+        build-docker)
+            docker build -t fretquiz .
+            ;;
+        run-docker)
+            docker run -it -p 8080:8080 --rm fretquiz
+            ;;
         *)
-            echo "Invalid argument. Please use 'run', 'clean', 'install', or 'compile'."
+            echo "Valid arguments: 'run', 'clean', 'install', 'compile', 'build-docker', 'run-docker'"
             exit 1
             ;;
     esac
