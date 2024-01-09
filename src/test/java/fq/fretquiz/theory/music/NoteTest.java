@@ -8,9 +8,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class NoteTest {
 
-    Logger log = LoggerFactory.getLogger(NoteTest.class);
-
-    final static Note C4 = new Note(WhiteKey.C, Accidental.NONE, Octave.FOUR);
+    static final Logger log = LoggerFactory.getLogger(NoteTest.class);
+    static final Note C4 = new Note(WhiteKey.C, Accidental.NONE, Octave.FOUR);
 
     @Test
     void makeNote() {

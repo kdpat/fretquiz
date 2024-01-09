@@ -123,7 +123,6 @@ public record Note(WhiteKey whiteKey,
 
     /**
      * Returns a note that is the given number of half-steps higher.
-     *
      * @param halfSteps must be a positive number
      */
     public Note transpose(int halfSteps) {
