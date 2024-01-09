@@ -22,6 +22,10 @@ public class App {
 
     public static <T> T randomElem(List<T> list) {
         Random random = ThreadLocalRandom.current();
+        return randomElem(random, list);
+    }
+
+    public static <T> T randomElem(Random random, List<T> list) {
         int index = random.nextInt(list.size());
         return list.get(index);
     }

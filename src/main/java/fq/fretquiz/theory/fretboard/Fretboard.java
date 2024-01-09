@@ -1,8 +1,11 @@
 package fq.fretquiz.theory.fretboard;
 
+import fq.fretquiz.App;
+import fq.fretquiz.theory.music.Midi;
 import fq.fretquiz.theory.music.Note;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public record Fretboard(List<Note> openStrings,
                         FretSpan fretSpan,
@@ -69,17 +72,13 @@ public record Fretboard(List<Note> openStrings,
      * @return a random note on that can be played on the fretboard.
      */
     public Note randomNote() {
-        Note low = openStrings.getLast();
-        Note high = openStrings.getFirst().transpose(fretCount());
-        return Note.randomBetween(low, high);
+        int midiLow = openStrings.getLast().midiNum();
+        int midiHigh = openStrings.getFirst().transpose(fretCount()).midiNum();
+        Random random = ThreadLocalRandom.current();
+        int midiKey = random.nextInt(midiLow, midiHigh+1);
+        List<Note> notes = Midi.notesAt(midiKey);
+        return App.randomElem(random, notes);
     }
-
-//    public Note randomNote() {
-//        Random random = ThreadLocalRandom.current();
-//        int string = random.nextInt(stringCount());
-//        List<Note> notes = notesOnString(string);
-//        return App.randomElem(notes);
-//    }
 
     public List<Note> notesOnString(int string) {
         if (string < 1 || string > stringCount() + 1) {
