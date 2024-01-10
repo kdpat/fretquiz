@@ -1,6 +1,5 @@
 package fq.fretquiz.theory.music;
 
-import fq.fretquiz.theory.fretboard.Fretboard;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

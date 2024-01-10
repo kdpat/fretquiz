@@ -47,7 +47,7 @@ public class Game {
 
     public boolean userIsPlaying(Long userId) {
         return players.stream()
-                .anyMatch(player -> player.user().id().equals(userId));
+                .anyMatch(p -> p.user().id().equals(userId));
     }
 
     public void addPlayer(Player player) {

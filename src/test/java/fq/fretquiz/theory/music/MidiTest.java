@@ -19,7 +19,7 @@ class MidiTest {
     @Test
     void sharpsAt() {
         for (int i = 21; i <= 60; i++) {
-            log.info("{}: {}", i, Midi.sharpsAt(i));
+            log.info("{}: {}", i, Midi.sharpAt(i));
         }
     }
 
@@ -59,9 +59,8 @@ class MidiTest {
     }
 
     @Test
-    void findNoteAt() {
+    void findNotes() {
         for (int i = Midi.MIDI_LOW; i <= Midi.MIDI_HIGH; i++) {
-//            log.info("{}: {}", i, Midi.findNoteAt(i));
             log.info("{}: {}", i, Midi.findNoteSharps(i));
             log.info("{}: {}\n", i, Midi.findNoteFlats(i));
         }
