@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import fq.fretquiz.App;
 import fq.fretquiz.user.User;
 import jakarta.servlet.http.Cookie;
 
@@ -11,8 +12,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Optional;
-
-import static fq.fretquiz.App.nowMillis;
 
 public class Auth {
 
@@ -27,7 +26,7 @@ public class Auth {
             .build();
 
     public static String encodeUserIdToken(Long userId) {
-        Instant now = nowMillis();
+        Instant now = App.nowMillis();
 
         return JWT.create()
                 .withClaim("userId", userId)

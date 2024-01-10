@@ -24,9 +24,15 @@ class MidiFretboardTest {
 
     @Test
     void findNote() {
-        log.info("standard midi fretboard: {}", standard);
-        var note = standard.findNote(new FretCoord(2, 1)).orElseThrow();
-        log.info("string:2,fret:1: {}", note);
+        var fretCoord = new FretCoord(2, 1);
+        var note = standard.findNote(fretCoord).orElseThrow();
+        assertEquals(note, new Note(WhiteKey.C, Accidental.NONE, Octave.FIVE));
+    }
+
+    @Test
+    void findFretCoord() {
+        var fretCoords = standard.findFretCoords(C4);
+        assertEquals(List.of(new FretCoord(5, 3)), fretCoords);
     }
 
     @Test
@@ -35,5 +41,12 @@ class MidiFretboardTest {
         for (int i = 0; i < 50; i++) {
             log.info("{}: {}", i, fretboard.randomNote());
         }
+    }
+
+    @Test
+    void midiKeyAt() {
+        var fretCoord = new FretCoord(2, 1);
+        assertEquals(72, standard.midiKeyAt(fretCoord));
+        log.info("{}: {}", fretCoord, standard.midiKeyAt(fretCoord));
     }
 }

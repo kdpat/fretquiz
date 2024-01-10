@@ -16,6 +16,9 @@ public class App {
         SpringApplication.run(App.class, args);
     }
 
+    /**
+     * @return the current Instant truncated to milliseconds
+     */
     public static Instant nowMillis() {
         return Instant.now().truncatedTo(ChronoUnit.MILLIS);
     }

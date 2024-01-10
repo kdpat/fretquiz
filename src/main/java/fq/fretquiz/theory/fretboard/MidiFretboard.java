@@ -4,9 +4,7 @@ import fq.fretquiz.App;
 import fq.fretquiz.theory.music.Midi;
 import fq.fretquiz.theory.music.Note;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MidiFretboard {
@@ -34,11 +32,28 @@ public class MidiFretboard {
         return Optional.of(note);
     }
 
+    public int midiKeyAt(FretCoord fretCoord) {
+        int openString = openStrings.get(fretCoord.string()-1);
+        return openString + fretCoord.fret();
+    }
+
     public List<FretCoord> findFretCoords(Note note) {
         int midiNum = note.midiNum();
-        return List.of();
+        List<FretCoord> fretCoords = new ArrayList<>();
+
+        for (int string = 1; string <= stringCount(); string++) {
+            int stringMidi = openStrings.get(string-1);
+            for (int fret = fretSpan.startFret(); fret <= fretSpan.endFret(); fret++) {
+                int fretCoordMidi = stringMidi + fret;
+                if (midiNum == fretCoordMidi) {
+                    var fretCoord = new FretCoord(string, fret);
+                    fretCoords.add(fretCoord);
+                }
+            }
+        }
+        return Collections.unmodifiableList(fretCoords);
     }
-    
+
     public Note randomNote() {
         int midiLow = openStrings.getLast();
         int midiHigh = openStrings.getFirst() + fretCount();

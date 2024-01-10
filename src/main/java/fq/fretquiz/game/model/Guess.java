@@ -1,28 +1,37 @@
 package fq.fretquiz.game.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import fq.fretquiz.App;
 import fq.fretquiz.theory.fretboard.FretCoord;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 
 import java.time.Instant;
 
-import static fq.fretquiz.App.nowMillis;
-
 @Embeddable
 public class Guess {
 
     @Embedded
     private Payload payload;
-
     private boolean isCorrect;
     private Instant createdAt;
+
+    /**
+     * Represents the data sent from the client when a user guesses (clicks the fretboard).
+     *
+     * @param playerId  the player who guessed
+     * @param fretCoord the string and fret that they clicked
+     */
+    @Embeddable
+    public record Payload(Long playerId,
+                          FretCoord fretCoord) {
+    }
 
     public static Guess create(Payload payload, boolean isCorrect) {
         var guess = new Guess();
         guess.payload = payload;
         guess.isCorrect = isCorrect;
-        guess.createdAt = nowMillis();
+        guess.createdAt = App.nowMillis();
         return guess;
     }
 
@@ -59,16 +68,5 @@ public class Guess {
                 ", isCorrect=" + isCorrect +
                 ", createdAt=" + createdAt +
                 '}';
-    }
-
-    /**
-     * Represents the data sent from the client when a user guesses (clicks the fretboard).
-     *
-     * @param playerId  the player who guessed
-     * @param fretCoord the string and fret that they clicked
-     */
-    @Embeddable
-    public record Payload(Long playerId,
-                          FretCoord fretCoord) {
     }
 }

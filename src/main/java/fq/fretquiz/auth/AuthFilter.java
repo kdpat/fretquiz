@@ -20,7 +20,7 @@ import java.util.Set;
 public class AuthFilter extends OncePerRequestFilter {
 
     /**
-     * The pages that expect a user attr to be set.
+     * The uris that expect a "user" attribute to be set.
      * This filter will ignore requests to any other uris.
      */
     public static final Set<String> USER_ATTR_URIS = Set.of("/", "/game");
