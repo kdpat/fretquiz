@@ -1,6 +1,9 @@
 package fq.fretquiz.theory.music;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public class Midi {
 
@@ -15,17 +18,13 @@ public class Midi {
     private static final WhiteKey[] DOUBLE_SHARP_NOTES = {WhiteKey.G, null, WhiteKey.A, null, WhiteKey.B, WhiteKey.C, null, WhiteKey.D, null, WhiteKey.E, WhiteKey.F, null,};
 
     public static final int MIDI_LOW = 21; // A0
-    public static final int MIDI_HIGH = 108;
-
-    private static boolean outOfRange(int midiKey) {
-        return midiKey < MIDI_LOW || midiKey > MIDI_HIGH;
-    }
+    public static final int MIDI_HIGH = 108; // C8
 
     /**
-     * @param offset the distance from note A0, MIDI_LOW
+     * @param offset the distance from MIDI_LOW
      */
     private static Octave calculateOctave(int midiKey, int offset, Accidental acc) {
-        var val = switch (acc) {
+        int val = switch (acc) {
             case DOUBLE_FLAT -> midiKey >= 22 ? ((offset + 11) / 12) : 0;
             case FLAT -> midiKey >= 23 ? ((offset + 10) / 12) : 0;
             case NONE -> midiKey >= 24 ? ((midiKey - 12) / 12) : 0;
@@ -49,15 +48,32 @@ public class Midi {
         List<Note> notes = new ArrayList<>();
 
         for (var acc : Accidental.values()) {
-            noteWithAccidental(midiKey, acc).ifPresent(notes::add);
+            noteWithAccidental(midiKey, acc)
+                    .ifPresent(notes::add);
         }
 
         return Collections.unmodifiableList(notes);
     }
 
+    public static Optional<Note> findNoteAt(int midiKey) {
+        return noteWithAccidental(midiKey, Accidental.NONE)
+                .or(() -> noteWithAccidental(midiKey, Accidental.SHARP))
+                .or(() -> noteWithAccidental(midiKey, Accidental.FLAT));
+    }
+
+    public static Note findNoteSharps(int midiKey) {
+        return noteWithAccidental(midiKey, Accidental.NONE)
+                .orElseGet(() -> noteWithAccidental(midiKey, Accidental.SHARP).orElseThrow());
+    }
+
+    public static Note findNoteFlats(int midiKey) {
+        return noteWithAccidental(midiKey, Accidental.NONE)
+                .orElseGet(() -> noteWithAccidental(midiKey, Accidental.FLAT).orElseThrow());
+    }
+
     public static Optional<Note> noteWithAccidental(int midiKey, Accidental acc) {
-        if (outOfRange(midiKey)) {
-            return Optional.empty();
+        if (midiKey < MIDI_LOW || midiKey > MIDI_HIGH) {
+            throw new IllegalArgumentException("midi key out of range");
         }
 
         int distanceFromA0 = midiKey - MIDI_LOW;

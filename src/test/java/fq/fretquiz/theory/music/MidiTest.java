@@ -1,5 +1,6 @@
 package fq.fretquiz.theory.music;
 
+import fq.fretquiz.theory.fretboard.Fretboard;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,22 @@ class MidiTest {
     void notesAt() {
         for (int i = Midi.MIDI_LOW; i <= Midi.MIDI_HIGH; i++) {
             log.info("{}: {}", i, Midi.notesAt(i));
+        }
+    }
+
+    @Test
+    void midiStringNums() {
+        for (Note openString : Fretboard.STANDARD_GUITAR_STRINGS) {
+            log.info("{}: {}", openString, openString.midiNum());
+        }
+    }
+
+    @Test
+    void findNoteAt() {
+        for (int i = Midi.MIDI_LOW; i <= Midi.MIDI_HIGH; i++) {
+//            log.info("{}: {}", i, Midi.findNoteAt(i));
+            log.info("{}: {}", i, Midi.findNoteSharps(i));
+            log.info("{}: {}\n", i, Midi.findNoteFlats(i));
         }
     }
 }

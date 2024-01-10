@@ -4,14 +4,13 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import fq.fretquiz.App;
 import jakarta.persistence.Embeddable;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static fq.fretquiz.App.randomElem;
 
 @Embeddable
 @JsonSerialize(using = Note.Serializer.class)
@@ -49,9 +48,9 @@ public record Note(WhiteKey whiteKey,
     }
 
     public static Note random() {
-        WhiteKey whiteKey = randomElem(List.of(WhiteKey.values()));
-        Accidental accidental = randomElem(List.of(Accidental.values()));
-        Octave octave = randomElem(List.of(Octave.values()));
+        WhiteKey whiteKey = App.randomElem(List.of(WhiteKey.values()));
+        Accidental accidental = App.randomElem(List.of(Accidental.values()));
+        Octave octave = App.randomElem(List.of(Octave.values()));
         return new Note(whiteKey, accidental, octave);
     }
 

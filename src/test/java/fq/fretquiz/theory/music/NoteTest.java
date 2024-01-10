@@ -1,5 +1,6 @@
 package fq.fretquiz.theory.music;
 
+import fq.fretquiz.theory.fretboard.Fretboard;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,5 +17,6 @@ class NoteTest {
         log.info("c4 name: {}", C4.name());
         assertEquals(C4, Note.fromString("C/4"));
         assertEquals("C/4", C4.name());
+
     }
 }

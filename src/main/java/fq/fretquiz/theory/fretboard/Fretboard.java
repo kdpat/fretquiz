@@ -1,8 +1,7 @@
 package fq.fretquiz.theory.fretboard;
 
 import fq.fretquiz.App;
-import fq.fretquiz.theory.music.Midi;
-import fq.fretquiz.theory.music.Note;
+import fq.fretquiz.theory.music.*;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -13,12 +12,12 @@ public record Fretboard(List<Note> openStrings,
 
     public static final List<Note> STANDARD_GUITAR_STRINGS =
             List.of(
-                    Note.fromString("E/5"),
-                    Note.fromString("B/4"),
-                    Note.fromString("G/4"),
-                    Note.fromString("D/4"),
-                    Note.fromString("A/3"),
-                    Note.fromString("E/3")
+                    new Note(WhiteKey.E, Accidental.NONE, Octave.FIVE),
+                    new Note(WhiteKey.B, Accidental.NONE, Octave.FOUR),
+                    new Note(WhiteKey.G, Accidental.NONE, Octave.FOUR),
+                    new Note(WhiteKey.D, Accidental.NONE, Octave.FOUR),
+                    new Note(WhiteKey.A, Accidental.NONE, Octave.THREE),
+                    new Note(WhiteKey.E, Accidental.NONE, Octave.THREE)
             );
 
     public static Fretboard create(List<Note> openStrings, FretSpan fretSpan) {
@@ -32,7 +31,7 @@ public record Fretboard(List<Note> openStrings,
 
         for (int string = 0; string < stringCount; string++) {
             for (int fret = fretSpan.startFret(); fret <= fretSpan.endFret(); fret++) {
-                var fretCoord = new FretCoord(string + 1, fret);
+                var fretCoord = new FretCoord(string+1, fret);
                 Note openString = openStrings.get(string);
                 Note transposed = openString.transpose(fret);
                 notes.put(fretCoord, transposed);
@@ -46,7 +45,7 @@ public record Fretboard(List<Note> openStrings,
      */
     public Optional<Note> findNote(FretCoord coord) {
         Note note = fretCoordNotes.get(coord);
-        return Optional.of(note);
+        return Optional.ofNullable(note);
     }
 
     /**
@@ -74,9 +73,11 @@ public record Fretboard(List<Note> openStrings,
     public Note randomNote() {
         int midiLow = openStrings.getLast().midiNum();
         int midiHigh = openStrings.getFirst().transpose(fretCount()).midiNum();
+
         Random random = ThreadLocalRandom.current();
-        int midiKey = random.nextInt(midiLow, midiHigh+1);
+        int midiKey = random.nextInt(midiLow, midiHigh + 1);
         List<Note> notes = Midi.notesAt(midiKey);
+
         return App.randomElem(random, notes);
     }
 
@@ -84,6 +85,7 @@ public record Fretboard(List<Note> openStrings,
         if (string < 1 || string > stringCount() + 1) {
             throw new IllegalArgumentException();
         }
+
         List<Note> notes = new ArrayList<>();
 
         for (int fret = fretSpan.startFret(); fret <= fretSpan.endFret(); fret++) {
