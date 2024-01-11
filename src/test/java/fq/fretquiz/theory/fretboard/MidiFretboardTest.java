@@ -33,6 +33,9 @@ class MidiFretboardTest {
     void findFretCoord() {
         var fretCoords = standard.findFretCoords(C4);
         assertEquals(List.of(new FretCoord(5, 3)), fretCoords);
+
+        fretCoords = standard.findFretCoords(Note.fromString("B/2"));
+        log.info("B/2: {}", fretCoords);
     }
 
     @Test

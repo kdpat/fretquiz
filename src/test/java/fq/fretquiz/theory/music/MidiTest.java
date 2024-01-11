@@ -1,6 +1,6 @@
 package fq.fretquiz.theory.music;
 
-import fq.fretquiz.theory.fretboard.Fretboard;
+import fq.fretquiz.theory.fretboard.NoteFretboard;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ class MidiTest {
 
     @Test
     void midiStringNums() {
-        for (Note openString : Fretboard.STANDARD_GUITAR_STRINGS) {
+        for (Note openString : NoteFretboard.STANDARD_GUITAR_STRINGS) {
             log.info("{}: {}", openString, openString.midiNum());
         }
     }

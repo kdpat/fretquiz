@@ -7,7 +7,7 @@ import fq.fretquiz.theory.music.Note;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class MidiFretboard {
+public class MidiFretboard implements Fretboard {
 
     private final List<Integer> openStrings; // midi numbers
     private final FretSpan fretSpan;
@@ -24,6 +24,8 @@ public class MidiFretboard {
         this.openStrings = openStrings;
         this.fretSpan = fretSpan;
     }
+
+    public static MidiFretboard STANDARD = new MidiFretboard(STANDARD_GUITAR_STRINGS, new FretSpan(0, 4));
 
     public Optional<Note> findNote(FretCoord fretCoord) {
         int stringMidi = openStrings.get(fretCoord.string() - 1);

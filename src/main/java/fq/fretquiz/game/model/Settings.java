@@ -2,6 +2,8 @@ package fq.fretquiz.game.model;
 
 import fq.fretquiz.theory.fretboard.FretSpan;
 import fq.fretquiz.theory.fretboard.Fretboard;
+import fq.fretquiz.theory.fretboard.MidiFretboard;
+import fq.fretquiz.theory.fretboard.NoteFretboard;
 import fq.fretquiz.theory.music.Accidental;
 import fq.fretquiz.theory.music.Note;
 import jakarta.persistence.*;
@@ -39,7 +41,7 @@ public class Settings {
         settings.roundCount = 4;
         settings.stringsToUse = new HashSet<>(stringsToUse);
         settings.accidentalsToUse = new HashSet<>(accidentalsToUse);
-        settings.openStringNotes = new ArrayList<>(Fretboard.STANDARD_GUITAR_STRINGS);
+        settings.openStringNotes = new ArrayList<>(NoteFretboard.STANDARD_GUITAR_STRINGS);
         settings.fretSpan = new FretSpan(0, 4);
 
         return settings;
@@ -47,7 +49,7 @@ public class Settings {
 
     public Fretboard fretboard() {
         if (fretboard == null) {
-            fretboard = Fretboard.create(openStringNotes, fretSpan);
+            fretboard = MidiFretboard.STANDARD;
         }
         return fretboard;
     }
